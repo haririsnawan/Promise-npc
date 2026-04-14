@@ -29,9 +29,8 @@
                         <th scope="col" class="px-6 py-4 font-semibold">Event / PO</th>
                         <th scope="col" class="px-6 py-4 font-semibold">Part Info</th>
                         <th scope="col" class="px-6 py-4 font-semibold">Qty & Target</th>
-                        <th scope="col" class="px-6 py-4 font-semibold w-64">Antrean Proses (Routing)</th>
-                        <th scope="col" class="px-6 py-4 font-semibold w-40">Status Global</th>
-                        <th scope="col" class="px-6 py-4 font-semibold text-right">Aksi</th>
+                        <th scope="col" class="px-6 py-4 font-semibold text-center" colspan="2">Progress Keseluruhan</th>
+                        <th scope="col" class="px-6 py-4 font-semibold text-right">Durasi Sistem</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
@@ -49,90 +48,51 @@
                             <div class="text-gray-800 dark:text-gray-300 font-bold text-sm">{{ $part->qty }} PCS</div>
                             <div class="text-xs text-red-500 font-medium mt-1"><i class="fa-regular fa-calendar md:mr-1"></i> {{ \Carbon\Carbon::parse($part->delivery_date)->format('d M y') }}</div>
                         </td>
-                        <td class="px-4 py-3">
-                            @if($part->processes->count() > 0)
-                                {{-- Routing chips: horizontal, wrap --}}
-                                <div class="flex flex-wrap gap-1 mb-1.5">
-                                    @foreach($part->processes as $process)
-                                        <span class="inline-flex items-center gap-1 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 text-[10px] font-semibold px-1.5 py-0.5 rounded" title="{{ optional(optional($process->process)->department)->name }}">
-                                            <span class="text-gray-400 font-bold">{{ $process->sequence_order }}.</span>
-                                            {{ optional($process->process)->process_name ?? 'Unknown Process' }}
-                                        </span>
-                                    @endforeach
+                        <td class="px-6 py-4 font-medium align-middle" colspan="2">
+                            <div class="flex items-start justify-center w-full max-w-sm pt-2">
+                                @php
+                                    $phases = ['PO_REGISTERED', 'WAITING_DEPT_CONFIRM', 'WAITING_QE_CHECK', 'WAITING_MGM_CHECK', 'FINISHED', 'CLOSED'];
+                                    $currentIndex = array_search($part->status, $phases);
+                                    if($currentIndex === false) $currentIndex = -1;
+                                    $steps = [
+                                        ['icon' => 'fa-file-contract', 'title' => 'Draft'],
+                                        ['icon' => 'fa-industry', 'title' => 'Produksi'],
+                                        ['icon' => 'fa-microscope', 'title' => 'QC'],
+                                        ['icon' => 'fa-user-tie', 'title' => 'MGM'],
+                                        ['icon' => 'fa-boxes-stacked', 'title' => 'Stok'],
+                                    ];
+                                    if($part->status === 'CLOSED') $currentIndex = 5; // To fill the entire bar
+                                @endphp
+                                
+                                <div class="flex w-full">
+                                @foreach($steps as $idx => $step)
+                                    <div class="flex flex-col items-center flex-1 relative group">
+                                        @if($idx < count($steps) - 1)
+                                            <div class="absolute w-[calc(100%-1.75rem)] top-3.5 left-[calc(50%+0.875rem)] h-[3px] rounded {{ $currentIndex > $idx ? 'bg-blue-500' : 'bg-gray-200 dark:bg-gray-700' }}"></div>
+                                        @endif
+                                        <div class="z-10 bg-white dark:bg-gray-800 {{ $currentIndex > $idx ? 'text-white bg-blue-500 border-blue-500' : ($currentIndex === $idx ? 'text-blue-600 border-blue-500 bg-blue-50 dark:bg-blue-900/30 ring-4 ring-blue-100 dark:ring-blue-900/40' : 'text-gray-400 border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800') }} border-2 w-7 h-7 flex items-center justify-center rounded-full text-[10px] shadow-sm transition-all duration-300">
+                                            <i class="fa-solid {{ $step['icon'] }}"></i>
+                                        </div>
+                                        <span class="text-[9px] mt-1.5 font-bold uppercase tracking-wider text-center {{ $currentIndex >= $idx ? 'text-blue-700 dark:text-blue-400' : 'text-gray-400' }}">{{ $step['title'] }}</span>
+                                    </div>
+                                @endforeach
                                 </div>
-                                {{-- QC & MGM targets inline --}}
-                                <div class="flex flex-wrap gap-x-3 gap-y-0.5">
-                                    @if($part->qc_target_date)
-                                    <span class="text-[10px] text-emerald-600 dark:text-emerald-400 font-medium flex items-center gap-1">
-                                        <i class="fa-solid fa-microscope"></i> QE: {{ \Carbon\Carbon::parse($part->qc_target_date)->format('d M y') }}
-                                    </span>
-                                    @endif
-                                    @if($part->mgm_target_date)
-                                    <span class="text-[10px] text-purple-600 dark:text-purple-400 font-medium flex items-center gap-1">
-                                        <i class="fa-solid fa-user-check"></i> MGM: {{ \Carbon\Carbon::parse($part->mgm_target_date)->format('d M y') }}
-                                    </span>
-                                    @endif
+                            </div>
+                            
+                            @if($part->status === 'CLOSED')
+                                <div class="mt-4 text-center">
+                                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200 text-[10px] font-bold tracking-wide shadow-sm"><i class="fa-solid fa-flag-checkered"></i> PROJECT CLOSED (TERKIRIM)</span>
                                 </div>
-                            @else
-                                <span class="text-xs text-orange-500 italic flex items-center gap-1">
-                                    <i class="fa-solid fa-triangle-exclamation"></i> Belum ada Routing
-                                </span>
-                            @endif
-
-                        </td>
-                        <td class="px-6 py-4 font-medium align-top">
-                            @if($part->status === 'PO_REGISTERED')
-                                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-300 text-xs font-medium"><i class="fa-solid fa-file-contract"></i> Draft PO</span>
-                            @elseif($part->status === 'WAITING_DEPT_CONFIRM')
-                                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-yellow-100 text-yellow-800 text-xs font-medium"><i class="fa-solid fa-industry"></i> In Production</span>
-                            @elseif($part->status === 'WAITING_QE_CHECK')
-                                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-orange-100 text-orange-800 text-xs font-medium"><i class="fa-solid fa-magnifying-glass"></i> QE Check</span>
-                            @elseif($part->status === 'WAITING_MGM_CHECK')
-                                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-purple-100 text-purple-800 text-xs font-medium"><i class="fa-solid fa-user-tie"></i> MGM Check</span>
-                            @elseif($part->status === 'FINISHED')
-                                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-green-100 text-green-800 text-xs font-medium"><i class="fa-solid fa-boxes-stacked"></i> FG Stock</span>
-                            @elseif($part->status === 'CLOSED')
-                                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-blue-100 text-blue-800 text-xs font-medium"><i class="fa-solid fa-truck-fast"></i> Terkirim</span>
-                            @else
-                                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-gray-100 text-gray-800 text-xs font-medium">{{ $part->status }}</span>
                             @endif
                         </td>
                         <td class="px-6 py-4 text-right align-top">
-                            <div class="flex flex-col items-end gap-2 text-sm">
-                            @if($statusParam !== 'all' && $part->status !== $statusParam)
-                                <div class="px-3 py-2 bg-gray-50 dark:bg-gray-700/50 border border-gray-200 dark:border-gray-600 rounded text-[10px] text-gray-400 italic flex items-center gap-1.5 cursor-not-allowed">
-                                    <i class="fa-solid fa-lock text-[8px]"></i> Menunggu Proses Sebelumnya
-                                </div>
-                            @elseif($part->status === 'PO_REGISTERED')
-                                <a href="{{ route('parts.routing.edit', $part->id) }}" class="inline-flex px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded shadow-sm font-medium transition items-center gap-1 text-xs" style="background-color: #4f46e5;">
-                                    <i class="fa-solid fa-route"></i> Set Routing Schedule
-                                </a>
-                            @elseif($part->status === 'WAITING_DEPT_CONFIRM')
-                                <button type="button"
-                                    onclick="openCompleteModal({{ $part->id }}, '{{ route('tracking.status.update', $part->id) }}')"
-                                    class="px-3 py-1.5 bg-amber-500 hover:bg-amber-600 text-white rounded shadow-sm font-medium transition text-xs" style="background-color: #f59e0b;">
-                                    <i class="fa-solid fa-forward-step mr-1"></i> Produksi Selesai
-                                </button>
-                            @elseif($part->status === 'WAITING_QE_CHECK')
-                                <a href="{{ route('checksheets.create', $part->id) }}" class="inline-flex px-3 py-1.5 bg-orange-500 hover:bg-orange-600 text-white rounded shadow-sm font-medium transition items-center gap-1 text-xs" style="background-color: #f97316;">
-                                    <i class="fa-regular fa-clipboard"></i> Input Quality (QC)
-                                </a>
-                            @elseif($part->status === 'WAITING_MGM_CHECK')
-                                <a href="{{ route('checksheets.create', $part->id) }}" class="inline-flex px-3 py-1.5 bg-purple-500 hover:bg-purple-600 text-white rounded shadow-sm font-medium transition items-center gap-1 text-xs" style="background-color: #a855f7;">
-                                    <i class="fa-solid fa-check-double"></i> MGM Approve
-                                </a>
-                            @elseif($part->status === 'FINISHED')
-                                <form action="{{ route('tracking.deliver', $part->id) }}" method="POST">
-                                    @csrf
-                                    <button type="submit" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded shadow-sm font-medium transition text-xs" style="background-color: #2563eb;" onclick="return confirm('Kirim part ini ke Customer? (Status menjadi CLOSED)');">
-                                        <i class="fa-solid fa-truck-fast mr-1"></i> Proses Pengiriman
-                                    </button>
-                                </form>
-                            @elseif($part->status === 'CLOSED')
-                                <span class="text-blue-600 border border-blue-200 bg-blue-50 px-3 py-1 rounded text-xs font-semibold cursor-default">
-                                    <i class="fa-solid fa-check"></i> Selesai
-                                </span>
-                            @endif
+                            <div class="text-[11px] font-medium text-gray-500 text-right w-full flex flex-col items-end gap-1">
+                                <span class="bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded border border-gray-200 dark:border-gray-600">IN: {{ $part->created_at->format('d M Y') }}</span>
+                                @if($part->status === 'CLOSED')
+                                    <span class="bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 px-2 py-1 rounded border border-emerald-200 dark:border-emerald-800 shadow-sm mt-1">OUT: {{ $part->actual_delivery ? \Carbon\Carbon::parse($part->actual_delivery)->format('d M Y') : '-' }}</span>
+                                @else
+                                    <span class="text-amber-600 font-bold mt-1 tracking-wide"><i class="fa-solid fa-hourglass-half animate-pulse"></i> {{ str_replace(' ago', '', $part->created_at->diffForHumans()) }}</span>
+                                @endif
                             </div>
                         </td>
                     </tr>

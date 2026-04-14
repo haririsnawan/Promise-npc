@@ -47,22 +47,22 @@ class ProductionTrackingController extends Controller
 
     public function setup(\Illuminate\Http\Request $request)
     {
-        return $this->renderTrackingPage('PO_REGISTERED', 'Setup Routing Produksi', 'fa-route', 'Menyiapkan rute dan jadwal untuk PO Baru');
+        return $this->renderTrackingPage('PO_REGISTERED', 'Setup Routing Produksi', 'fa-route', 'Menyiapkan rute dan jadwal untuk PO Baru', 'tracking.setup');
     }
 
     public function production(\Illuminate\Http\Request $request)
     {
-        return $this->renderTrackingPage('WAITING_DEPT_CONFIRM', 'Proses Produksi', 'fa-industry', 'Pantau komponen yang sedang dalam tahap produksi');
+        return $this->renderTrackingPage('WAITING_DEPT_CONFIRM', 'Proses Produksi', 'fa-industry', 'Pantau komponen yang sedang dalam tahap produksi', 'tracking.production');
     }
 
     public function qc(\Illuminate\Http\Request $request)
     {
-        return $this->renderTrackingPage('WAITING_QE_CHECK', 'Pemeriksaan Kualitas (QC)', 'fa-microscope', 'Input dan validasi pengecekan kualitas');
+        return $this->renderTrackingPage('WAITING_QE_CHECK', 'Pemeriksaan Kualitas (QC)', 'fa-microscope', 'Input dan validasi pengecekan kualitas', 'tracking.qc');
     }
 
     public function mgm(\Illuminate\Http\Request $request)
     {
-        return $this->renderTrackingPage('WAITING_MGM_CHECK', 'Persetujuan Management', 'fa-user-tie', 'Validasi dan konfirmasi final oleh manajemen');
+        return $this->renderTrackingPage('WAITING_MGM_CHECK', 'Persetujuan Management', 'fa-user-tie', 'Validasi dan konfirmasi final oleh manajemen', 'tracking.mgm');
     }
 
     public function stock(\Illuminate\Http\Request $request)
