@@ -47,7 +47,7 @@
                             @if($part->processes->count() > 0)
                                 <div class="flex flex-wrap gap-1 mb-1.5">
                                     @foreach($part->processes as $process)
-                                        <span class="inline-flex items-center gap-1 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 text-[10px] font-semibold px-1.5 py-0.5 rounded" title="{{ optional(optional($process->process)->department)->name }}">
+                                        <span class="inline-flex items-center gap-1 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 text-[10px] font-semibold px-1.5 py-0.5 rounded" title="{{ optional($process->department)->name }}">
                                             <span class="text-gray-400 font-bold">{{ $process->sequence_order }}.</span>
                                             {{ optional($process->process)->process_name ?? 'Unknown Process' }}
                                         </span>

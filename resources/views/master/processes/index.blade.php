@@ -31,10 +31,16 @@
                         <td class="px-6 py-4 font-medium text-slate-500 dark:text-slate-400">{{ $i + 1 }}</td>
                         <td class="px-6 py-4 font-bold text-slate-900 dark:text-white">{{ $process->process_name }}</td>
                         <td class="px-6 py-4">
-                            <span class="px-2.5 py-1 rounded border text-xs font-semibold
-                                {{ optional($process->department)->name == 'ME' ? 'bg-orange-100 text-orange-800 border-orange-200 dark:bg-orange-900/40 dark:text-orange-300 dark:border-orange-800' : 'bg-purple-100 text-purple-800 border-purple-200 dark:bg-purple-900/40 dark:text-purple-300 dark:border-purple-800' }}">
-                                {{ optional($process->department)->name ?? '-' }}
-                            </span>
+                            <div class="flex flex-wrap gap-1">
+                                @forelse($process->departments as $dept)
+                                    <span class="px-2.5 py-1 rounded border text-xs font-semibold
+                                        {{ $dept->name == 'ME' ? 'bg-orange-100 text-orange-800 border-orange-200 dark:bg-orange-900/40 dark:text-orange-300 dark:border-orange-800' : 'bg-purple-100 text-purple-800 border-purple-200 dark:bg-purple-900/40 dark:text-purple-300 dark:border-purple-800' }}">
+                                        {{ $dept->name }}
+                                    </span>
+                                @empty
+                                    <span class="text-xs text-gray-400 italic">Belum diatur</span>
+                                @endforelse
+                            </div>
                         </td>
                         <td class="px-6 py-4 text-right">
                             <div class="flex justify-end gap-1 opacity-50 group-hover:opacity-100 transition">

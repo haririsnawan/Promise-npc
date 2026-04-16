@@ -55,17 +55,20 @@
 
                     <div id="process_container" class="space-y-3">
                         <!-- Dynamic processes -->
-                        <div class="process-item flex gap-3 items-center" data-index="0">
-                            <div class="w-10 text-center font-bold text-gray-400 dark:text-gray-500">1.</div>
-                            <div class="flex-1">
-                                <select name="process_ids[]" required class="w-full rounded-lg border-gray-300 dark:border-gray-600 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm dark:bg-gray-700 dark:text-white">
+                        <div class="process-item flex gap-3 items-start" data-index="0">
+                            <div class="w-10 text-center font-bold text-gray-400 dark:text-gray-500 mt-2">1.</div>
+                            <div class="flex-1 grid grid-cols-1 md:grid-cols-2 gap-3">
+                                <select name="process_ids[]" required class="process-select w-full rounded-lg border-gray-300 dark:border-gray-600 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm dark:bg-gray-700 dark:text-white">
                                     <option value="">Pilih Proses</option>
                                     @foreach($processes as $proc)
                                         <option value="{{ $proc->id }}">{{ $proc->process_name }}</option>
                                     @endforeach
                                 </select>
+                                <select name="department_ids[]" required class="department-select w-full rounded-lg border-gray-300 dark:border-gray-600 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm dark:bg-gray-700 dark:text-white">
+                                    <option value="">Pilih Department</option>
+                                </select>
                             </div>
-                            <button type="button" class="remove-process w-10 text-center text-red-500 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/30 p-2 rounded transition">
+                            <button type="button" class="remove-process w-10 text-center text-red-500 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/30 p-2 rounded transition mt-0.5">
                                 <i class="fa-solid fa-xmark"></i>
                             </button>
                         </div>
@@ -155,6 +158,22 @@
         const addBtn = document.getElementById('add_process_btn');
         let processCount = 1;
 
+        // Data for dropdowns
+        const masterProcesses = @json($processes);
+
+        function getDepartmentOptions(processId) {
+            let options = '<option value="">Pilih Department</option>';
+            if (!processId) return options;
+            
+            const process = masterProcesses.find(p => p.id == processId);
+            if (process && process.departments) {
+                process.departments.forEach(dept => {
+                    options += `<option value="${dept.id}">${dept.full_name || dept.name}</option>`;
+                });
+            }
+            return options;
+        }
+
         const processOptions = `
             <option value="">Pilih Proses</option>
             @foreach($processes as $proc)
@@ -172,20 +191,31 @@
         addBtn.addEventListener('click', function() {
             processCount++;
             const itemHtml = `
-                <div class="process-item flex gap-3 items-center" data-index="${processCount}">
-                    <div class="w-10 text-center font-bold text-gray-400 dark:text-gray-500"></div>
-                    <div class="flex-1">
-                        <select name="process_ids[]" required class="w-full rounded-lg border-gray-300 dark:border-gray-600 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm dark:bg-gray-700 dark:text-white">
+                <div class="process-item flex gap-3 items-start" data-index="${processCount}">
+                    <div class="w-10 text-center font-bold text-gray-400 dark:text-gray-500 mt-2"></div>
+                    <div class="flex-1 grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <select name="process_ids[]" required class="process-select w-full rounded-lg border-gray-300 dark:border-gray-600 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm dark:bg-gray-700 dark:text-white">
                             ${processOptions}
                         </select>
+                        <select name="department_ids[]" required class="department-select w-full rounded-lg border-gray-300 dark:border-gray-600 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm dark:bg-gray-700 dark:text-white">
+                            <option value="">Pilih Department</option>
+                        </select>
                     </div>
-                    <button type="button" class="remove-process w-10 text-center text-red-500 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/30 p-2 rounded transition">
+                    <button type="button" class="remove-process w-10 text-center text-red-500 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/30 p-2 rounded transition mt-0.5">
                         <i class="fa-solid fa-xmark"></i>
                     </button>
                 </div>
             `;
             container.insertAdjacentHTML('beforeend', itemHtml);
             updateSequenceNumbers();
+        });
+
+        container.addEventListener('change', function(e) {
+            if (e.target.classList.contains('process-select')) {
+                const processId = e.target.value;
+                const deptSelect = e.target.closest('.process-item').querySelector('.department-select');
+                deptSelect.innerHTML = getDepartmentOptions(processId);
+            }
         });
 
         container.addEventListener('click', function(e) {

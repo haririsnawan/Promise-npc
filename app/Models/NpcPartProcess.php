@@ -14,8 +14,11 @@ class NpcPartProcess extends Model
     protected $fillable = [
         'npc_part_id',
         'process_id',
+        'department_id',
         'target_completion_date',
         'actual_completion_date',
+        'actual_qty',
+        'photo_proof',
         'status',
         'sequence_order',
     ];
@@ -28,5 +31,10 @@ class NpcPartProcess extends Model
     public function process()
     {
         return $this->belongsTo(NpcProcess::class, 'process_id');
+    }
+
+    public function department()
+    {
+        return $this->belongsTo(NpcDepartment::class, 'department_id');
     }
 }

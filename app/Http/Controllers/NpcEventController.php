@@ -104,15 +104,7 @@ class NpcEventController extends Controller
                 'status' => 'PO_REGISTERED',
             ]);
 
-            // 3. Build Initial Part Process
-            if (isset($routing) && $routing && $routing->process) {
-                \App\Models\NpcPartProcess::create([
-                    'npc_part_id' => $part->id,
-                    'process_id' => $routing->process_id,
-                    'sequence_order' => $routing->sequence_order,
-                    'status' => 'WAITING'
-                ]);
-            }
+            // Processes will be configured during the Setup Routing phase natively
 
             // Sync Mapping MGM Checkpoints
             if (!empty($partData['checkpoints'])) {
@@ -246,12 +238,7 @@ class NpcEventController extends Controller
                 ]);
                 
                 if ($processObj) {
-                    \App\Models\NpcPartProcess::create([
-                        'npc_part_id' => $part->id,
-                        'process_id' => $processObj->id,
-                        'sequence_order' => 1,
-                        'status' => 'WAITING'
-                    ]);
+                    // Processes will be generated at the Setup Routing phase
                 }
                 $importedCount++;
             }

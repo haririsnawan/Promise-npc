@@ -133,7 +133,8 @@
             row.className = 'group hover:bg-gray-50 dark:hover:bg-gray-700/50 transition';
             
             const processName = data ? (data.process_name || '') : '';
-            const department = data ? (data.department || '') : '';
+            const departmentId = data ? data.department_id : '';
+            const departmentName = data ? (data.department_name || '') : '';
 
             row.innerHTML = `
                 <td class="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-500 dark:text-gray-400">
@@ -145,8 +146,10 @@
                     <input type="hidden" name="routing[${processIndex}][process_name]" value="${processName}">
                 </td>
                 <td class="px-4 py-2 whitespace-nowrap">
-                    <span class="text-sm font-medium text-gray-700 dark:text-gray-200">${department}</span>
-                    <input type="hidden" name="routing[${processIndex}][department]" value="${department}">
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-semibold bg-gray-100 text-gray-800 border border-gray-200 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 shadow-sm">
+                        ${departmentName}
+                    </span>
+                    <input type="hidden" name="routing[${processIndex}][department_id]" value="${departmentId}">
                 </td>
                 <td class="px-4 py-2 whitespace-nowrap">
                     <input type="date" name="routing[${processIndex}][target_completion_date]" required value="${data && data.target_completion_date ? data.target_completion_date : ''}" class="w-full text-sm rounded border-gray-300 dark:border-gray-600 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:text-white">

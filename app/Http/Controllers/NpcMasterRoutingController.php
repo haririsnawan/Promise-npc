@@ -30,7 +30,7 @@ class NpcMasterRoutingController extends Controller
 
     public function create()
     {
-        $processes = NpcProcess::orderBy('process_name')->get();
+        $processes = NpcProcess::with('departments')->orderBy('process_name')->get();
         return view('master.routings.create', compact('processes'));
     }
 
@@ -40,6 +40,8 @@ class NpcMasterRoutingController extends Controller
             'part_id' => 'required|exists:products,id',
             'process_ids' => 'required|array|min:1',
             'process_ids.*' => 'required|exists:npc_processes,id',
+            'department_ids' => 'required|array|min:1',
+            'department_ids.*' => 'required|exists:npc_departments,id',
         ]);
 
         DB::transaction(function () use ($request) {
@@ -50,6 +52,7 @@ class NpcMasterRoutingController extends Controller
                 NpcMasterRouting::create([
                     'part_id' => $request->part_id,
                     'process_id' => $processId,
+                    'department_id' => $request->department_ids[$index],
                     'sequence_order' => $index + 1,
                 ]);
             }
@@ -62,7 +65,7 @@ class NpcMasterRoutingController extends Controller
     {
         $part = Product::findOrFail($part_id);
         $routings = NpcMasterRouting::where('part_id', $part_id)->orderBy('sequence_order')->get();
-        $processes = NpcProcess::orderBy('process_name')->get();
+        $processes = NpcProcess::with('departments')->orderBy('process_name')->get();
 
         return view('master.routings.edit', compact('part', 'routings', 'processes'));
     }
@@ -72,6 +75,8 @@ class NpcMasterRoutingController extends Controller
         $request->validate([
             'process_ids' => 'required|array|min:1',
             'process_ids.*' => 'required|exists:npc_processes,id',
+            'department_ids' => 'required|array|min:1',
+            'department_ids.*' => 'required|exists:npc_departments,id',
         ]);
 
         DB::transaction(function () use ($request, $part_id) {
@@ -81,6 +86,7 @@ class NpcMasterRoutingController extends Controller
                 NpcMasterRouting::create([
                     'part_id' => $part_id,
                     'process_id' => $processId,
+                    'department_id' => $request->department_ids[$index],
                     'sequence_order' => $index + 1,
                 ]);
             }

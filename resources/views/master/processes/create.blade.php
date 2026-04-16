@@ -40,19 +40,106 @@
             </div>
 
             <div class="space-y-1">
-                <label for="department" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                <label for="department_ids" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
                     Department PIC <span class="text-red-500">*</span>
                 </label>
-                <select id="department_id" name="department_id" required
-                    class="w-full rounded-lg border-gray-300 dark:border-gray-600 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm dark:bg-gray-700 dark:text-white">
-                    <option value="">Pilih Department</option>
-                    @foreach($departments as $dept)
-                        <option value="{{ $dept->id }}" {{ old('department_id') == $dept->id ? 'selected' : '' }}>
-                            {{ $dept->full_name ?? $dept->name }}
-                        </option>
-                    @endforeach
-                </select>
-                <p class="text-xs text-slate-500 dark:text-slate-400 mt-1"><i class="fa-solid fa-circle-info mr-1"></i> Departemen penanggung jawab yang wajib mengkonfirmasi di halaman Dashboard.</p>
+                <div x-data="{
+                    search: '',
+                    open: false,
+                    departments: {{ json_encode($departments->map(fn($d) => ['id' => $d->id, 'name' => $d->full_name ?? $d->name])) }},
+                    selectedIds: [{{ implode(',', old('department_ids', [])) }}],
+                    get filteredDepartments() {
+                        if (this.search === '') {
+                            return this.departments.filter(d => !this.selectedIds.includes(d.id));
+                        }
+                        return this.departments.filter(d => !this.selectedIds.includes(d.id) && d.name.toLowerCase().includes(this.search.toLowerCase()));
+                    },
+                    get selectedDepartments() {
+                        return this.departments.filter(d => this.selectedIds.includes(d.id));
+                    },
+                    selectDepartment(id) {
+                        if (!this.selectedIds.includes(id)) {
+                            this.selectedIds.push(id);
+                        }
+                        this.search = '';
+                        this.open = false;
+                        this.$refs.searchInput.focus();
+                    },
+                    removeDepartment(id) {
+                        this.selectedIds = this.selectedIds.filter(i => i !== id);
+                    }
+                }" class="space-y-3">
+                    
+                    <!-- Search / Select Box -->
+                    <div class="relative" @click.away="open = false">
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
+                                <i class="fa-solid fa-search text-xs"></i>
+                            </div>
+                            <input 
+                                x-ref="searchInput"
+                                type="text" 
+                                x-model="search" 
+                                @focus="open = true"
+                                class="w-full rounded-lg border-gray-300 dark:border-gray-600 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm dark:bg-gray-700 dark:text-white"
+                                style="padding-left: 2.5rem;" 
+                                placeholder="Ketik untuk mencari dan menambahkan department...">
+                        </div>
+                        
+                        <!-- Dropdown Box -->
+                        <div x-show="open && filteredDepartments.length > 0" 
+                             style="display: none;"
+                             class="absolute z-20 mt-1 w-full bg-white dark:bg-gray-800 rounded-md shadow-lg border border-gray-200 dark:border-gray-700 max-h-60 overflow-y-auto">
+                            <ul class="py-1 text-sm text-gray-700 dark:text-gray-200">
+                                <template x-for="dept in filteredDepartments" :key="dept.id">
+                                    <li>
+                                        <button type="button" @click="selectDepartment(dept.id)" class="w-full text-left px-4 py-2 hover:bg-blue-50 dark:hover:bg-gray-700 hover:text-blue-600 dark:hover:text-white transition-colors">
+                                            <span x-text="dept.name"></span>
+                                        </button>
+                                    </li>
+                                </template>
+                            </ul>
+                        </div>
+                        
+                        <div x-show="open && search !== '' && filteredDepartments.length === 0" 
+                             style="display: none;"
+                             class="absolute z-20 mt-1 w-full bg-white dark:bg-gray-800 rounded-md shadow-lg border border-gray-200 dark:border-gray-700 p-4 text-center">
+                            <span class="text-sm text-gray-500"><i class="fa-solid fa-magnifying-glass mr-1"></i> Tidak ditemukan department dengan kata kunci tersebut.</span>
+                        </div>
+                    </div>
+
+                    <!-- Selected tags container (Hasil) -->
+                    <div class="p-3 bg-slate-50 dark:bg-gray-800/50 rounded-lg border border-dashed border-gray-300 dark:border-gray-700 min-h-[60px]">
+                        <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">PIC Terpilih:</p>
+                        <div class="flex flex-wrap gap-2">
+                            <template x-if="selectedDepartments.length === 0">
+                                <span class="text-sm text-gray-400 italic flex items-center"><i class="fa-solid fa-inbox mr-2"></i> Belum ada yang dipilih.</span>
+                            </template>
+                            
+                            <template x-for="dept in selectedDepartments" :key="dept.id">
+                                <div class="inline-flex items-center gap-1 px-3 py-1.5 bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-300 rounded-full text-sm font-medium border border-blue-200 dark:border-blue-800 shadow-sm transition-all hover:shadow">
+                                    <span x-text="dept.name"></span>
+                                    <button type="button" @click="removeDepartment(dept.id)" class="ml-1.5 text-blue-400 hover:text-red-500 dark:text-blue-400 dark:hover:text-red-400 focus:outline-none transition-colors">
+                                        <i class="fa-solid fa-xmark"></i>
+                                    </button>
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+
+                    <!-- Hidden native inputs for form submission -->
+                    <div class="hidden">
+                        <template x-for="id in selectedIds">
+                            <input type="hidden" name="department_ids[]" :value="id">
+                        </template>
+                        <!-- Fallback required validator simulation -->
+                        <select name="department_validator" required class="hidden" x-bind:required="selectedIds.length === 0">
+                            <option value=""></option>
+                            <option value="filled" selected x-show="selectedIds.length > 0">Filled</option>
+                        </select>
+                    </div>
+
+                </div>
             </div>
 
         </div>
@@ -68,3 +155,9 @@
     </form>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+
+</script>
+@endpush

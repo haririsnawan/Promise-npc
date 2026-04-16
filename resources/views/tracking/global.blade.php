@@ -64,7 +64,7 @@
     @endif
 
     <!-- Table & Modals -->
-    <div class="p-6" x-data="{ activeModal: null }">
+    <div class="p-6" x-data="{ activeModal: null, activeGlobalPhotoModal: null }">
         <div class="overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700">
             <table class="w-full text-sm text-left text-slate-600 dark:text-slate-400">
                 <thead class="bg-gray-100 dark:bg-gray-700/50 text-slate-800 dark:text-slate-200 border-b border-gray-200 dark:border-gray-600 uppercase text-xs tracking-wider">
@@ -373,8 +373,18 @@
                                                 <tr x-show="expandedPM === {{ $part->id }}" class="bg-blue-50/20 dark:bg-gray-800/30 transition-all" x-cloak style="display:none;">
                                                     <td colspan="3" class="px-4 py-3 border-l-4 border-blue-400">
                                                         <div class="ml-2">
-                                                            <h5 class="text-[9px] font-bold uppercase tracking-widest text-slate-500 mb-2 flex items-center gap-1.5"><i class="fa-solid fa-route"></i> Rute Detail: Part Making</h5>
+                                                            <div class="flex items-center justify-between mb-2">
+                                                                <h5 class="text-[9px] font-bold uppercase tracking-widest text-slate-500 flex items-center gap-1.5"><i class="fa-solid fa-route"></i> Rute Detail: Part Making</h5>
+                                                                @if($part->processes->where('status', 'FINISHED')->count() > 0)
+                                                                <button @click="activeGlobalPhotoModal = {{ $part->id }}" class="text-[9px] font-bold text-blue-600 bg-blue-50 hover:bg-blue-100 border border-blue-200 px-2 py-0.5 rounded transition flex items-center gap-1 shadow-sm">
+                                                                    <i class="fa-solid fa-camera"></i> Cek Qty & Foto
+                                                                </button>
+                                                                @endif
+                                                            </div>
                                                             @if($part->processes && $part->processes->count() > 0)
+                                                                @php
+                                                                    $activeProcId = $part->processes->where('status', 'WAITING')->sortBy('sequence_order')->first()?->id;
+                                                                @endphp
                                                                 <div class="flex flex-wrap items-center gap-x-1 gap-y-2 mt-1 relative z-10 w-full overflow-x-auto pb-1">
                                                                     @foreach($part->processes->sortBy('sequence_order')->values() as $pIdx => $pProc)
                                                                         @php
@@ -383,11 +393,11 @@
                                                                             if ($spStatus === 'FINISHED' || $pProc->actual_completion_date) {
                                                                                 $spBg = "bg-emerald-100 text-emerald-700 border-emerald-300";
                                                                                 $spIcon = "fa-check";
-                                                                            } elseif (in_array($spStatus, ['ON_PROGRESS', 'IN_PROGRESS', 'IN_PRODUCTION'])) {
-                                                                                $spBg = "bg-amber-100/80 text-amber-700 border-amber-300 ring-1 ring-amber-300";
+                                                                            } elseif ($pProc->id === $activeProcId) {
+                                                                                $spBg = "bg-amber-100/80 text-amber-700 border-amber-300 ring-1 ring-amber-300 shadow-sm";
                                                                                 $spIcon = "fa-spinner fa-spin";
                                                                             } else {
-                                                                                $spBg = "bg-gray-100 text-gray-500 border-gray-200";
+                                                                                $spBg = "bg-gray-100 text-gray-500 border-gray-200 opacity-70";
                                                                                 $spIcon = "fa-clock";
                                                                             }
                                                                         @endphp
@@ -422,6 +432,119 @@
                     </div>
                 </div>
             </div>
+        @endforeach
+
+        <!-- Render Modals for Photos -->
+        @foreach($pos as $po)
+            @foreach($po->parts as $part)
+                <div x-show="activeGlobalPhotoModal === {{ $part->id }}" class="relative z-[150]" aria-labelledby="modal-title" role="dialog" aria-modal="true" x-cloak style="display: none;">
+                    <div x-show="activeGlobalPhotoModal === {{ $part->id }}"
+                        x-transition:enter="ease-out duration-300"
+                        x-transition:enter-start="opacity-0"
+                        x-transition:enter-end="opacity-100"
+                        x-transition:leave="ease-in duration-200"
+                        x-transition:leave-start="opacity-100"
+                        x-transition:leave-end="opacity-0"
+                        class="fixed inset-0 bg-gray-900/50 backdrop-blur-sm transition-opacity"></div>
+                  
+                    <div class="fixed inset-0 z-[160] w-screen overflow-y-auto">
+                        <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+                            <div x-show="activeGlobalPhotoModal === {{ $part->id }}"
+                                @click.away="activeGlobalPhotoModal = null"
+                                x-transition:enter="ease-out duration-300"
+                                x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                                x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
+                                x-transition:leave="ease-in duration-200"
+                                x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
+                                x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                                class="relative transform overflow-hidden rounded-xl bg-white dark:bg-gray-800 text-left shadow-2xl transition-all sm:my-8 sm:w-full sm:max-w-2xl">
+                                
+                                <!-- Header -->
+                                <div class="bg-gray-50/80 dark:bg-gray-800 px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
+                                    <h3 class="text-base font-bold text-gray-800 dark:text-white flex items-center gap-2">
+                                        <i class="fa-solid fa-camera text-blue-500"></i> Laporan Produksi: {{ optional($part->product)->part_no }}
+                                    </h3>
+                                    <button type="button" @click="activeGlobalPhotoModal = null" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+                                        <i class="fa-solid fa-xmark text-xl"></i>
+                                    </button>
+                                </div>
+                                
+                                <!-- Body -->
+                                <div class="p-6 max-h-[75vh] overflow-y-auto bg-gray-50/50 dark:bg-gray-900/50">
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        @foreach($part->processes->sortBy('sequence_order') as $idx => $p)
+                                            <div class="flex flex-col bg-white dark:bg-gray-800 rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow transition-shadow group {{ $p->status === 'FINISHED' ? '' : 'opacity-60 saturate-50' }}">
+                                                <!-- Image Box -->
+                                                <div class="relative w-full aspect-video bg-gray-900 flex items-center justify-center border-b border-gray-100 dark:border-gray-700">
+                                                    @if($p->photo_proof)
+                                                        <img src="{{ Storage::url($p->photo_proof) }}" class="w-full h-full object-contain">
+                                                        <a href="{{ Storage::url($p->photo_proof) }}" target="_blank" class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity text-white font-bold text-sm gap-2 backdrop-blur-[2px]">
+                                                            <i class="fa-solid fa-expand"></i> Perbesar Foto
+                                                        </a>
+                                                    @else
+                                                        <div class="text-gray-500 dark:text-gray-400 flex flex-col items-center gap-2">
+                                                            <i class="fa-solid fa-image text-3xl opacity-50"></i>
+                                                            <span class="text-xs font-medium tracking-wide">Belum Ada Foto</span>
+                                                        </div>
+                                                    @endif
+                                                    
+                                                    <!-- Status Floating Badge -->
+                                                    <div class="absolute top-3 right-3 shadow-md">
+                                                    @if($p->status === 'FINISHED')
+                                                        <span class="px-2.5 py-1 rounded bg-emerald-500 text-white text-[10px] font-black tracking-wider uppercase"><i class="fa-solid fa-check mr-1"></i> Selesai</span>
+                                                    @else
+                                                        <span class="px-2.5 py-1 rounded bg-white/90 text-gray-700 text-[10px] font-bold tracking-wider shadow-sm uppercase">{{ $p->status }}</span>
+                                                    @endif
+                                                    </div>
+                                                </div>
+
+                                                <!-- Content Box -->
+                                                <div class="p-4 flex flex-col flex-1">
+                                                    <h4 class="font-bold text-base text-gray-800 dark:text-gray-100 mb-1 flex items-center gap-2">
+                                                        <span class="flex-shrink-0 w-6 h-6 inline-flex items-center justify-center rounded-full bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-400 text-xs shadow-sm">{{ $p->sequence_order }}</span>
+                                                        {{ optional($p->process)->process_name ?? 'Proses ' . $p->sequence_order }}
+                                                    </h4>
+                                                    
+                                                    <div class="mt-3 space-y-2">
+                                                        <div class="flex items-center justify-between text-xs">
+                                                            <span class="text-gray-500 dark:text-gray-400 font-medium"><i class="fa-solid fa-building-user w-4"></i> Departemen:</span> 
+                                                            <span class="font-bold text-gray-700 dark:text-gray-200">{{ optional($p->department)->name ?? '-' }}</span>
+                                                        </div>
+                                                        <div class="flex items-center justify-between text-xs">
+                                                            <span class="text-gray-500 dark:text-gray-400 font-medium"><i class="fa-regular fa-calendar-check w-4"></i> Tgl Aktual:</span> 
+                                                            <span class="font-bold text-gray-700 dark:text-gray-200">{{ $p->actual_completion_date ? \Carbon\Carbon::parse($p->actual_completion_date)->format('d M Y') : '-' }}</span>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="mt-4 pt-3 border-t border-gray-100 dark:border-gray-700/50 flex items-center justify-between">
+                                                        <div class="flex flex-col">
+                                                            <span class="text-[9px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest">Target Qty</span>
+                                                            <span class="text-xs font-semibold text-gray-500 dark:text-gray-400 mt-0.5">{{ number_format($part->qty) }} PCS</span>
+                                                        </div>
+                                                        <div class="flex flex-col items-end">
+                                                            <span class="text-[9px] font-bold text-blue-500 dark:text-blue-400 uppercase tracking-widest">Actual QTY</span>
+                                                            @if($p->actual_qty)
+                                                                <span class="text-sm font-black text-blue-600 dark:text-blue-400 mt-0.5">{{ number_format($p->actual_qty) }} PCS</span>
+                                                            @else
+                                                                <span class="text-xs font-bold text-amber-500 italic mt-1">Belum Lapor</span>
+                                                            @endif
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                </div>
+                                
+                                <!-- Footer -->
+                                <div class="bg-gray-50 dark:bg-gray-800 px-6 py-3 border-t border-gray-200 dark:border-gray-700 flex justify-end">
+                                    <button type="button" @click="activeGlobalPhotoModal = null" class="px-4 py-2 text-sm font-medium border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 rounded hover:bg-gray-50 transition">Tutup Laporan</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            @endforeach
         @endforeach
 
     </div>

@@ -10,12 +10,11 @@ class NpcProcess extends Model
     use HasFactory;
 
     protected $fillable = [
-        'process_name',
-        'department_id'
+        'process_name'
     ];
 
-    public function department()
+    public function departments()
     {
-        return $this->belongsTo(NpcDepartment::class, 'department_id');
+        return $this->belongsToMany(NpcDepartment::class, 'npc_department_process', 'process_id', 'department_id')->withTimestamps();
     }
 }

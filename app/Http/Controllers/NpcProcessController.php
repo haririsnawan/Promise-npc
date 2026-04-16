@@ -24,10 +24,15 @@ class NpcProcessController extends Controller
     {
         $request->validate([
             'process_name' => 'required|string|max:255|unique:npc_processes',
-            'department_id'   => 'required|exists:npc_departments,id',
+            'department_ids'   => 'required|array|min:1',
+            'department_ids.*' => 'exists:npc_departments,id',
         ]);
 
-        NpcProcess::create($request->all());
+        $process = NpcProcess::create([
+            'process_name' => $request->process_name
+        ]);
+        
+        $process->departments()->sync($request->department_ids);
 
         return redirect()->route('master.processes.index')->with('success', 'Master Process berhasl ditambahkan.');
     }
@@ -42,10 +47,15 @@ class NpcProcessController extends Controller
     {
         $request->validate([
             'process_name' => 'required|string|max:255|unique:npc_processes,process_name,' . $process->id,
-            'department_id'   => 'required|exists:npc_departments,id',
+            'department_ids'   => 'required|array|min:1',
+            'department_ids.*' => 'exists:npc_departments,id',
         ]);
 
-        $process->update($request->all());
+        $process->update([
+            'process_name' => $request->process_name
+        ]);
+        
+        $process->departments()->sync($request->department_ids);
 
         return redirect()->route('master.processes.index')->with('success', 'Master Process berhasil diperbarui.');
     }

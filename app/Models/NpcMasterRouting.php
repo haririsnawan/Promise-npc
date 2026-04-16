@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class NpcMasterRouting extends Model
 {
-    protected $fillable = ['part_id', 'process_id', 'sequence_order'];
+    protected $fillable = ['part_id', 'process_id', 'department_id', 'sequence_order'];
 
     public function part()
     {
@@ -16,5 +16,10 @@ class NpcMasterRouting extends Model
     public function process()
     {
         return $this->belongsTo(NpcProcess::class, 'process_id');
+    }
+
+    public function department()
+    {
+        return $this->belongsTo(NpcDepartment::class, 'department_id');
     }
 }

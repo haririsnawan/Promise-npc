@@ -15,13 +15,14 @@ class NpcPartProcessController extends Controller
      */
     public function edit(NpcPart $part)
     {
-        $part->load('processes.process.department', 'purchaseOrder.event.masterEvent');
+        $part->load('processes.process.departments', 'processes.department', 'purchaseOrder.event.masterEvent');
 
         // Jika belum ada proses, ambil dari NpcMasterRouting sebagai default
         if ($part->processes->isEmpty()) {
-            $product = \App\Models\Product::where('part_no', $part->part_no)->first();
+            $product = $part->product;
             if ($product) {
-                $masterRoutings = \App\Models\NpcMasterRouting::with('process')
+                // Here we eager load process
+                $masterRoutings = \App\Models\NpcMasterRouting::with(['process.departments', 'department'])
                     ->where('part_id', $product->id)
                     ->orderBy('sequence_order', 'asc')
                     ->get();
@@ -29,9 +30,12 @@ class NpcPartProcessController extends Controller
                 $defaultProcesses = collect();
                 foreach ($masterRoutings as $mr) {
                     if ($mr->process) {
+                        $defaultDept = $mr->department ?? $mr->process->departments->first();
                         $defaultProcesses->push([
                             'process_name' => $mr->process->process_name,
-                            'department' => $mr->process->department,
+                            'process_id' => $mr->process_id,
+                            'department_id' => $mr->department_id ?? optional($defaultDept)->id,
+                            'department_name' => optional($defaultDept)->name ?? '-',
                             'target_completion_date' => '',
                             'sequence_order' => $mr->sequence_order
                         ]);
@@ -47,16 +51,16 @@ class NpcPartProcessController extends Controller
             // Map the loaded processes to include process_name and department for the Javascript frontend
             $part->processes->transform(function ($process) {
                 $process->process_name = optional($process->process)->process_name;
-                $process->department = optional(optional($process->process)->department)->name;
+                
+                $mappedDept = $process->department ?? optional($process->process)->departments->first();
+                $process->department_id = $process->department_id ?? optional($mappedDept)->id;
+                $process->department_name = optional($mappedDept)->name ?? '-';
                 return $process;
             });
         }
 
-        $masterProcesses = tap(NpcProcess::orderBy('process_name')->get(), function ($q) {
+        $masterProcesses = tap(NpcProcess::with('departments')->orderBy('process_name')->get(), function ($q) {
             $q->transform(function ($p) {
-                // Ensure legacy standard naming match
-                if(!$p->department && strpos(strtoupper($p->process_name), 'GR') !== false) $p->department = 'PUD';
-                if(!$p->department && strpos(strtoupper($p->process_name), 'PR') !== false) $p->department = 'ME';
                 return $p;
             });
         });
@@ -74,7 +78,7 @@ class NpcPartProcessController extends Controller
         $request->validate([
             'routing' => 'nullable|array',
             'routing.*.process_name' => 'required|string',
-            'routing.*.department' => 'required|string',
+            'routing.*.department_id' => 'required|exists:npc_departments,id',
             'routing.*.target_completion_date' => 'required|date',
             'routing.*.sequence_order' => 'required|integer',
             'qc_target_date' => 'nullable|date',
@@ -92,6 +96,7 @@ class NpcPartProcessController extends Controller
                 NpcPartProcess::create([
                     'npc_part_id' => $part->id,
                     'process_id' => $process ? $process->id : null,
+                    'department_id' => $routeData['department_id'],
                     'target_completion_date' => $routeData['target_completion_date'],
                     'sequence_order' => $routeData['sequence_order'],
                     'status' => 'WAITING'

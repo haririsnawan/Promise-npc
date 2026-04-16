@@ -56,15 +56,7 @@ class NpcPartController extends Controller
             'status' => 'PO_REGISTERED'
         ]);
 
-        $processRecord = \App\Models\NpcProcess::where('process_name', $request->process)->first();
-        if ($processRecord) {
-            \App\Models\NpcPartProcess::create([
-                'npc_part_id' => $part->id,
-                'process_id' => $processRecord->id,
-                'sequence_order' => 1,
-                'status' => 'WAITING'
-            ]);
-        }
+        // Process schedules will be configured natively using the Setup Routing feature.
 
         return redirect()->route('events.parts.index', $event->id)->with('success', 'Part / Item added to event successfully.');
     }

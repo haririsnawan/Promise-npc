@@ -8,7 +8,7 @@ class ProductionTrackingController extends Controller
 {
     private function buildQuery($statusParam)
     {
-        $query = \App\Models\NpcPart::with(['purchaseOrder.event.customerCategory', 'purchaseOrder.event.deliveryGroup', 'purchaseOrder.event.masterEvent', 'processes.process.department', 'checkpoints', 'checksheet', 'product.vehicleModel.customer'])->latest();
+        $query = \App\Models\NpcPart::with(['purchaseOrder.event.customerCategory', 'purchaseOrder.event.deliveryGroup', 'purchaseOrder.event.masterEvent', 'processes.process', 'processes.department', 'checkpoints', 'checksheet', 'product.vehicleModel.customer'])->latest();
 
         if ($statusParam !== 'all') {
             // "Kamar Task" logic: show current status + ALL previous statuses as "Upcoming"
@@ -116,6 +116,51 @@ class ProductionTrackingController extends Controller
         $part->update($updateData);
 
         return back()->with('success', 'Status Part berhasil diperbarui.');
+    }
+
+    public function completeProcess(\Illuminate\Http\Request $request, \App\Models\NpcPart $part)
+    {
+        $request->validate([
+            'process_id' => 'required|exists:npc_part_processes,id',
+            'actual_completion_date' => 'required|date',
+            'actual_qty' => 'required|integer|min:0',
+            'photo' => 'required|image|mimes:jpeg,png,jpg,gif|max:5120',
+            'production_notes' => 'nullable|string|max:500',
+        ]);
+
+        $process = \App\Models\NpcPartProcess::where('id', $request->process_id)
+            ->where('npc_part_id', $part->id)
+            ->firstOrFail();
+
+        $photoPath = null;
+        if ($request->hasFile('photo')) {
+            $photoPath = $request->file('photo')->store('production_proofs', 'public');
+        }
+
+        // Tandai proses ini selesai
+        $process->update([
+            'status' => 'FINISHED',
+            'actual_completion_date' => $request->actual_completion_date,
+            'actual_qty' => $request->actual_qty,
+            'photo_proof' => $photoPath
+        ]);
+
+        // Cek apakah part ini masih punya proses yang belum selesai berdasar urutan
+        $remainingProcesses = \App\Models\NpcPartProcess::where('npc_part_id', $part->id)
+            ->where('status', 'WAITING')
+            ->count();
+
+        // Jika tidak ada sisa proses, barulah lempar part ke divisi QC
+        if ($remainingProcesses === 0) {
+            $part->update([
+                'status' => 'WAITING_QE_CHECK',
+                'actual_completion_date' => $request->actual_completion_date,
+                'production_notes' => $request->production_notes,
+            ]);
+            return back()->with('success', 'Rangkaian Produksi tamat. Barang berhasil diserahkan ke QC!');
+        }
+
+        return back()->with('success', 'Proses selesai! Berlajut ke departemen berikutnya.');
     }
 
     public function deliver(\Illuminate\Http\Request $request, \App\Models\NpcPart $part)
