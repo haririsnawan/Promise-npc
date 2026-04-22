@@ -12,8 +12,8 @@ class ProductionTrackingController extends Controller
 
         if ($statusParam !== 'all') {
             if ($statusParam === 'CLOSED') {
-                // Halaman History khusus untuk yang sudah CLOSED
-                $query->where('status', 'CLOSED');
+                // Halaman History khusus untuk yang sudah CLOSED atau OUTSTANDING (pengiriman parsial)
+                $query->whereIn('status', ['CLOSED', 'OUTSTANDING']);
             } else {
                 // Tampilkan SEMUA task (termasuk yang sudah CLOSED) agar riwayat tidak hilang dari Stock/tahap lain
             }
@@ -85,7 +85,7 @@ class ProductionTrackingController extends Controller
     public function updateStatus(\Illuminate\Http\Request $request, \App\Models\NpcPart $part)
     {
         $request->validate([
-            'status' => 'required|in:PO_REGISTERED,WAITING_DEPT_CONFIRM,IN_PRODUCTION,WAITING_QE_CHECK,WAITING_MGM_CHECK,FINISHED,CLOSED',
+            'status' => 'required|in:PO_REGISTERED,WAITING_DEPT_CONFIRM,IN_PRODUCTION,WAITING_QE_CHECK,WAITING_MGM_CHECK,FINISHED,OUTSTANDING,CLOSED',
             'actual_completion_date' => 'nullable|date',
             'production_notes' => 'nullable|string|max:500',
         ]);
@@ -153,11 +153,28 @@ class ProductionTrackingController extends Controller
 
     public function deliver(\Illuminate\Http\Request $request, \App\Models\NpcPart $part)
     {
+        $request->validate([
+            'delivered_qty' => 'required|integer|min:1'
+        ]);
+
+        $maxQty = $part->qty - $part->delivered_qty;
+        if ($request->delivered_qty > $maxQty) {
+            return back()->with('error', 'Jumlah yang dikirim melebihi sisa barang (' . $maxQty . ' PCS).');
+        }
+
+        $newDeliveredQty = $part->delivered_qty + $request->delivered_qty;
+        $status = ($newDeliveredQty >= $part->qty) ? 'CLOSED' : 'OUTSTANDING';
+
         $part->update([
-            'status' => 'CLOSED',
+            'status' => $status,
+            'delivered_qty' => $newDeliveredQty,
             'actual_delivery' => \Carbon\Carbon::now()
         ]);
 
-        return back()->with('success', 'Part berhasil dikirim ke customer dan ditutup.');
+        $msg = ($status === 'CLOSED') 
+            ? 'Part berhasil dikirim seluruhnya ke customer dan ditutup.'
+            : 'Pengiriman parsial berhasil dicatat (' . $request->delivered_qty . ' PCS). Sisa barang masih outstanding.';
+
+        return back()->with('success', $msg);
     }
 }

@@ -3,6 +3,17 @@
 @section('title', 'Master Data Routing')
 @section('page_title', 'Master Data / Routing (Flow Process)')
 
+@push('styles')
+    <style>
+        .sortable-item:last-child .process-arrow {
+            display: none;
+        }
+        .sortable-ghost {
+            opacity: 0.4;
+        }
+    </style>
+@endpush
+
 @section('content')
 <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
     <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center bg-gray-50/50 dark:bg-gray-800/50">
@@ -38,18 +49,19 @@
                                 {{ optional(optional($routing->part)->vehicleModel)->name ?? 'Unknown Model' }}
                                 <span class="text-gray-400 mx-1">|</span>
                                 <i class="fa-solid fa-building text-gray-400 text-[10px]"></i>
-                                {{ optional(optional(optional($routing->part)->vehicleModel)->customer)->name ?? 'Unknown Customer' }}
+                                {{ optional(optional(optional($routing->part)->vehicleModel)->customer)->code ?? 'Unknown Customer' }}
                             </div>
                         </td>
                         <td class="px-6 py-4 text-slate-700 dark:text-slate-300 text-sm">
-                            <div class="flex flex-wrap gap-2 items-center">
+                            <div class="flex flex-wrap gap-2 items-center sortable-container" data-part-id="{{ $routing->part_id }}">
                                 @foreach($routing->processes as $i => $procRouting)
-                                    <span class="inline-flex items-center px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-xs font-semibold text-slate-700 dark:text-slate-300">
-                                        {{ optional($procRouting->process)->process_name ?? 'Unknown' }}
-                                    </span>
-                                    @if(!$loop->last)
-                                        <i class="fa-solid fa-arrow-right text-slate-300 dark:text-slate-500 text-xs mx-1"></i>
-                                    @endif
+                                    <div class="sortable-item flex items-center gap-2 cursor-move group/badge" data-id="{{ $procRouting->id }}">
+                                        <span class="inline-flex items-center px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-xs font-semibold text-slate-700 dark:text-slate-300 group-hover/badge:bg-blue-50 dark:group-hover/badge:bg-blue-900/30 group-hover/badge:border-blue-300 dark:group-hover/badge:border-blue-700 transition" title="Drag untuk mengubah urutan">
+                                            <i class="fa-solid fa-grip-vertical text-slate-400 mr-1.5 group-hover/badge:text-blue-500"></i>
+                                            {{ optional($procRouting->process)->process_name ?? 'Unknown' }}
+                                        </span>
+                                        <i class="fa-solid fa-arrow-right text-slate-300 dark:text-slate-500 text-xs process-arrow"></i>
+                                    </div>
                                 @endforeach
                             </div>
                         </td>
@@ -91,3 +103,54 @@
 </div>
 @endsection
 
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        if (typeof Sortable !== 'undefined') {
+            const containers = document.querySelectorAll('.sortable-container');
+            
+            containers.forEach(container => {
+                new Sortable(container, {
+                    handle: '.cursor-move',
+                    animation: 150,
+                    ghostClass: 'sortable-ghost',
+                    onEnd: function (evt) {
+                        const itemEl = evt.item;
+                        const parentEl = evt.to;
+                        const partId = parentEl.getAttribute('data-part-id');
+                        
+                        // Collect new order
+                        const order = [];
+                        parentEl.querySelectorAll('.sortable-item').forEach(item => {
+                            order.push(item.getAttribute('data-id'));
+                        });
+
+                        // Send AJAX
+                        fetch("{{ route('master.routings.reorder') }}", {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                'Accept': 'application/json'
+                            },
+                            body: JSON.stringify({ order: order })
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if(data.success) {
+                                // Show tiny success toast using the layout's Toast mechanism if available, or just ignore since it's saved.
+                            } else {
+                                alert('Gagal menyimpan urutan baru.');
+                            }
+                        })
+                        .catch(err => {
+                            console.error('Error reordering:', err);
+                            alert('Terjadi kesalahan saat menghubungi server.');
+                        });
+                    }
+                });
+            });
+        }
+    });
+</script>
+@endpush

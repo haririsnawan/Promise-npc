@@ -100,4 +100,20 @@ class NpcMasterRoutingController extends Controller
         NpcMasterRouting::where('part_id', $part_id)->delete();
         return redirect()->route('master.routings.index')->with('success', 'Master Routing berhasil dihapus.');
     }
+
+    public function reorder(Request $request)
+    {
+        $request->validate([
+            'order' => 'required|array',
+            'order.*' => 'integer|exists:npc_master_routings,id'
+        ]);
+
+        DB::transaction(function () use ($request) {
+            foreach ($request->order as $index => $id) {
+                NpcMasterRouting::where('id', $id)->update(['sequence_order' => $index + 1]);
+            }
+        });
+
+        return response()->json(['success' => true, 'message' => 'Urutan routing berhasil diperbarui.']);
+    }
 }

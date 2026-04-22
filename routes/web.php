@@ -26,6 +26,7 @@ Route::middleware(['auth'])->group(function () {
         Route::resource('checkpoints', \App\Http\Controllers\NpcMasterCheckpointController::class)->except(['show']);
         Route::resource('departments', \App\Http\Controllers\NpcMasterDepartmentController::class)->except(['show']);
         // Menambahkan Routings Route tapi dengan parameter part_id khusus
+        Route::post('routings/reorder', [\App\Http\Controllers\NpcMasterRoutingController::class, 'reorder'])->name('routings.reorder');
         Route::resource('routings', \App\Http\Controllers\NpcMasterRoutingController::class)->except(['show']);
         
         // Master Checksheet Mapping based on Product
@@ -46,6 +47,13 @@ Route::middleware(['auth'])->group(function () {
 
         Route::post('/data/products', function (\Illuminate\Http\Request $request) {
             $query = \App\Models\Product::with('vehicleModel.customer');
+            
+            // HANYA tampilkan product yang sudah disetup routing (proses) ATAU checksheet-nya
+            $query->where(function($q) {
+                $q->whereIn('id', function($sub) {
+                    $sub->select('part_id')->from('npc_master_routings');
+                })->orWhereHas('mappedCheckpoints');
+            });
             
             // Filter by model_id if provided
             if ($request->filled('model_id')) {
@@ -72,7 +80,7 @@ Route::middleware(['auth'])->group(function () {
                             
                 $prod->process_name = ($routing && $routing->process) ? $routing->process->process_name : null;
                 $prod->model_name = $prod->vehicleModel ? $prod->vehicleModel->name : 'N/A';
-                $prod->customer_name = ($prod->vehicleModel && $prod->vehicleModel->customer) ? $prod->vehicleModel->customer->name : 'N/A';
+                $prod->customer_name = ($prod->vehicleModel && $prod->vehicleModel->customer) ? $prod->vehicleModel->customer->code : 'N/A';
             }
             
             return response()->json(['results' => $products]);

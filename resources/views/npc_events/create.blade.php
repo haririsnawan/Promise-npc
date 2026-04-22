@@ -28,7 +28,7 @@
                             <option value="">Pilih Customer</option>
                             @foreach($customers as $customer)
                                 <option value="{{ $customer->id }}" {{ old('customer_id') == $customer->id ? 'selected' : '' }}>
-                                    {{ $customer->name }}
+                                    {{ $customer->code }}
                                 </option>
                             @endforeach
                         </select>
@@ -313,6 +313,45 @@
             const dropdown = partItem.querySelector('.part-autocomplete');
             let acTimer;
 
+            function fetchProducts(q) {
+                fetch("{{ route('api.data.products') }}", {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}'},
+                    body: JSON.stringify({ search: q, model_id: document.getElementById('model_select').value })
+                })
+                .then(r => r.json())
+                .then(data => {
+                    dropdown.innerHTML = '';
+                    if (data.results && data.results.length > 0) {
+                        data.results.forEach(item => {
+                            const div = document.createElement('div');
+                            div.className = 'px-3 py-2 cursor-pointer hover:bg-blue-50 dark:hover:bg-gray-700 border-b border-gray-100 dark:border-gray-700 last:border-0';
+                            div.innerHTML = `<span class="font-semibold font-mono text-blue-600 dark:text-blue-400 text-xs">${item.part_no}</span> <span class="text-gray-600 dark:text-gray-300 text-xs">${item.part_name}</span>`;
+                            div.addEventListener('mousedown', function(e) {
+                                e.preventDefault();
+                                displayInput.value = item.part_no;
+                                partNoInput.value = item.part_no;
+                                partNameInput.value = item.part_name;
+                                dropdown.classList.add('hidden');
+                            });
+                            dropdown.appendChild(div);
+                        });
+                        dropdown.classList.remove('hidden');
+                    } else {
+                        dropdown.innerHTML = '<div class="px-3 py-2 text-gray-400 text-xs italic">Tidak ada hasil</div>';
+                        dropdown.classList.remove('hidden');
+                    }
+                });
+            }
+
+            displayInput.addEventListener('focus', function() {
+                if (this.value.length === 0) {
+                    fetchProducts('');
+                } else {
+                    dropdown.classList.remove('hidden');
+                }
+            });
+
             displayInput.addEventListener('input', function() {
                 clearTimeout(acTimer);
                 
@@ -321,36 +360,9 @@
                 partNameInput.value = '';
                 
                 const q = this.value.trim();
-                if (q.length < 2) { dropdown.classList.add('hidden'); return; }
+                
                 acTimer = setTimeout(() => {
-                    fetch("{{ route('api.data.products') }}", {
-                        method: 'POST',
-                        headers: {'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}'},
-                        body: JSON.stringify({ search: q, model_id: document.getElementById('model_select').value })
-                    })
-                    .then(r => r.json())
-                    .then(data => {
-                        dropdown.innerHTML = '';
-                        if (data.results && data.results.length > 0) {
-                            data.results.forEach(item => {
-                                const div = document.createElement('div');
-                                div.className = 'px-3 py-2 cursor-pointer hover:bg-blue-50 dark:hover:bg-gray-700 border-b border-gray-100 dark:border-gray-700 last:border-0';
-                                div.innerHTML = `<span class="font-semibold font-mono text-blue-600 dark:text-blue-400 text-xs">${item.part_no}</span> <span class="text-gray-600 dark:text-gray-300 text-xs">${item.part_name}</span>`;
-                                div.addEventListener('mousedown', function(e) {
-                                    e.preventDefault();
-                                    displayInput.value = item.part_no;
-                                    partNoInput.value = item.part_no;
-                                    partNameInput.value = item.part_name;
-                                    dropdown.classList.add('hidden');
-                                });
-                                dropdown.appendChild(div);
-                            });
-                            dropdown.classList.remove('hidden');
-                        } else {
-                            dropdown.innerHTML = '<div class="px-3 py-2 text-gray-400 text-xs italic">Tidak ada hasil</div>';
-                            dropdown.classList.remove('hidden');
-                        }
-                    });
+                    fetchProducts(q);
                 }, 300);
             });
 

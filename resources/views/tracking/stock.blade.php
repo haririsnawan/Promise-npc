@@ -45,13 +45,13 @@
                         $timeStatusIcon = $isOverdue ? 'fa-triangle-exclamation' : 'fa-clock';
                         
                         // Retrieve customer info
-                        $customerName = optional(optional(optional($part->product)->vehicleModel)->customer)->name ?? 'Unknown Customer';
+                        $customerName = optional(optional(optional($part->product)->vehicleModel)->customer)->code ?? 'Unknown Customer';
                         $modelName = optional(optional($part->product)->vehicleModel)->name ?? '-';
                         
                         $categoryName = optional(optional(optional($part->purchaseOrder)->event)->customerCategory)->name ?? '-';
                         $grName = optional(optional(optional($part->purchaseOrder)->event)->deliveryGroup)->name ?? '-';
                     @endphp
-                    <tr class="bg-white dark:bg-gray-800 border-b dark:border-gray-700 hover:bg-blue-50/50 dark:hover:bg-gray-700/30 transition text-sm {{ $part->status !== 'FINISHED' ? 'opacity-[0.65] grayscale-[0.3] pointer-events-none' : '' }}">
+                    <tr class="bg-white dark:bg-gray-800 border-b dark:border-gray-700 hover:bg-blue-50/50 dark:hover:bg-gray-700/30 transition text-sm {{ !in_array($part->status, ['FINISHED', 'OUTSTANDING']) ? 'opacity-[0.65] grayscale-[0.3] pointer-events-none' : '' }}">
                         
                         {{-- Tujuan Kirim --}}
                         <td class="px-6 py-4">
@@ -81,6 +81,11 @@
                         {{-- Qty & Target Date --}}
                         <td class="px-6 py-4">
                             <div class="text-gray-800 dark:text-gray-300 font-black text-lg mb-0.5">{{ number_format($part->qty) }} <span class="text-xs font-semibold text-gray-500">PCS</span></div>
+                            @if($part->delivered_qty > 0)
+                            <div class="text-[11px] font-bold text-blue-600 dark:text-blue-400 mb-1">
+                                <i class="fa-solid fa-truck-ramp-box"></i> Terkirim: {{ number_format($part->delivered_qty) }} / {{ number_format($part->qty) }}
+                            </div>
+                            @endif
                             <div class="text-[11px] font-medium text-gray-500">
                                 Target: {{ \Carbon\Carbon::parse($part->delivery_date)->format('d M Y') }}
                             </div>
@@ -88,7 +93,7 @@
                         
                         {{-- Approval Info --}}
                         <td class="px-6 py-4 align-top">
-                            @if(in_array($part->status, ['FINISHED', 'CLOSED']))
+                            @if(in_array($part->status, ['FINISHED', 'OUTSTANDING', 'CLOSED']))
                                 <div class="flex flex-col gap-1.5 mt-1">
                                     <span class="text-[11px] font-medium text-slate-600 dark:text-slate-400 flex items-center gap-1.5 line-through decoration-slate-300 opacity-60">
                                         <i class="fa-solid fa-check text-green-500"></i> Produksi Selesai
@@ -118,18 +123,15 @@
                                 <div class="px-3 py-2 bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800 rounded text-[10px] text-blue-600 dark:text-blue-400 italic flex items-center gap-1.5 cursor-not-allowed font-bold">
                                     <i class="fa-solid fa-check-double text-[10px]"></i> Sudah Terkirim (Closed)
                                 </div>
-                            @elseif($part->status !== 'FINISHED')
+                            @elseif(!in_array($part->status, ['FINISHED', 'OUTSTANDING']))
                                 <div class="px-3 py-2 bg-gray-50 dark:bg-gray-700/50 border border-gray-200 dark:border-gray-600 rounded text-[10px] text-gray-400 italic flex items-center gap-1.5 cursor-not-allowed">
                                     <i class="fa-solid fa-lock text-[8px]"></i> Menunggu Proses Selesai
                                 </div>
                             @else
-                                <form action="{{ route('tracking.deliver', $part->id) }}" method="POST" class="inline-block">
-                                    @csrf
-                                    <button type="submit" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded shadow-sm font-medium transition text-xs flex items-center gap-2" onclick="return confirm('Silakan cetak Surat Jalan via sistem lain sebelum menekan tombol ini.\nLanjutkan proses pengiriman ke Customer? (Status menjadi CLOSED)');">
-                                        <i class="fa-solid fa-truck-fast"></i> Tandai Telah Dikirim
-                                    </button>
-                                </form>
-                                <p class="text-[9px] text-gray-400 mt-2 italic text-right max-w-[120px] mx-auto float-right text-balance">Ubah status menjadi selesai (Closed)</p>
+                                <button type="button" onclick="openDeliverModal('{{ $part->id }}', '{{ $part->qty - $part->delivered_qty }}', '{{ route('tracking.deliver', $part->id) }}', '{{ optional($part->product)->part_no }}')" class="px-4 py-2 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white rounded shadow-sm font-medium transition text-xs flex items-center gap-2">
+                                    <i class="fa-solid fa-truck-fast"></i> Kirim Barang
+                                </button>
+                                <p class="text-[9px] text-gray-400 mt-2 italic text-right">Sisa: {{ number_format($part->qty - $part->delivered_qty) }} PCS</p>
                             @endif
                             </div>
                         </td>
@@ -155,5 +157,95 @@
     </div>
     @endif
 </div>
+
+<!-- Deliver Modal -->
+<div id="deliverModal" class="fixed inset-0 z-50 hidden bg-gray-900/50 backdrop-blur-sm overflow-y-auto h-full w-full flex items-center justify-center">
+    <div class="relative w-full max-w-md bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-200 dark:border-gray-700 overflow-hidden scale-95 opacity-0 transition-all duration-300" id="deliverModalContent">
+        <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 flex justify-between items-center">
+            <h3 class="text-lg font-bold text-gray-800 dark:text-white flex items-center gap-2">
+                <i class="fa-solid fa-truck-ramp-box text-blue-500"></i> Form Pengiriman Barang
+            </h3>
+            <button type="button" onclick="closeDeliverModal()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+        </div>
+        
+        <form id="deliverForm" method="POST" action="">
+            @csrf
+            <div class="p-6">
+                <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                    Part No: <strong id="modalPartNo" class="text-gray-800 dark:text-gray-200"></strong><br>
+                    Silakan masukkan jumlah barang yang akan dikirim ke customer.
+                </p>
+                
+                <div class="mb-4">
+                    <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">
+                        Jumlah (Qty) Kirim <span class="text-red-500">*</span>
+                    </label>
+                    <div class="relative">
+                        <input type="number" id="modalDeliveredQty" name="delivered_qty" min="1" required
+                            class="w-full pl-4 pr-12 py-2 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 font-bold text-lg text-gray-800 dark:bg-gray-700 dark:text-white">
+                        <div class="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none text-gray-500 font-semibold text-sm">
+                            PCS
+                        </div>
+                    </div>
+                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">
+                        Sisa barang yang bisa dikirim: <strong id="modalMaxQtyText" class="text-blue-600 dark:text-blue-400"></strong> PCS
+                    </p>
+                </div>
+                
+                <div class="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800/50 p-3 rounded text-xs text-yellow-800 dark:text-yellow-300 mb-2">
+                    <i class="fa-solid fa-circle-exclamation mr-1"></i> Pastikan Anda telah mencetak Surat Jalan dari sistem internal Anda sebelum proses ini.
+                </div>
+            </div>
+            
+            <div class="px-6 py-4 bg-gray-50 dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 flex justify-end gap-3">
+                <button type="button" onclick="closeDeliverModal()" class="px-4 py-2 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-600 transition text-sm">
+                    Batal
+                </button>
+                <button type="submit" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow-sm font-bold transition flex items-center gap-2 text-sm">
+                    <i class="fa-solid fa-paper-plane"></i> Proses Kirim
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
 @endsection
+
+@push('scripts')
+<script>
+    function openDeliverModal(id, maxQty, url, partNo) {
+        const modal = document.getElementById('deliverModal');
+        const modalContent = document.getElementById('deliverModalContent');
+        const form = document.getElementById('deliverForm');
+        const qtyInput = document.getElementById('modalDeliveredQty');
+        const maxQtyText = document.getElementById('modalMaxQtyText');
+        const partNoText = document.getElementById('modalPartNo');
+        
+        form.action = url;
+        qtyInput.max = maxQty;
+        qtyInput.value = maxQty;
+        maxQtyText.textContent = maxQty;
+        partNoText.textContent = partNo;
+        
+        modal.classList.remove('hidden');
+        // Trigger reflow
+        void modal.offsetWidth;
+        modalContent.classList.remove('scale-95', 'opacity-0');
+        modalContent.classList.add('scale-100', 'opacity-100');
+    }
+    
+    function closeDeliverModal() {
+        const modal = document.getElementById('deliverModal');
+        const modalContent = document.getElementById('deliverModalContent');
+        
+        modalContent.classList.remove('scale-100', 'opacity-100');
+        modalContent.classList.add('scale-95', 'opacity-0');
+        
+        setTimeout(() => {
+            modal.classList.add('hidden');
+        }, 300);
+    }
+</script>
+@endpush
 

@@ -10,7 +10,7 @@
             <h2 class="text-lg font-semibold text-gray-800 dark:text-white flex items-center gap-2">
                 <i class="fa-solid fa-cube text-blue-500"></i> Form Tambah Part Output
             </h2>
-            <span class="text-sm font-medium bg-blue-100 text-blue-800 py-1 px-3 rounded-full">{{ $event->event_name }}</span>
+            <span class="text-sm font-medium bg-blue-100 text-blue-800 py-1 px-3 rounded-full">{{ optional($event->customerCategory)->name ?? 'Event' }}</span>
         </div>
 
         <form action="{{ route('events.parts.store', $event->id) }}" method="POST" class="p-6 space-y-6">
@@ -127,6 +127,59 @@
         
         let debounceTimer;
 
+        function fetchProducts(query) {
+            fetch("{{ route('api.data.products') }}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify({ search: query, model_id: modelId })
+            })
+            .then(response => response.json())
+            .then(data => {
+                searchResults.innerHTML = '';
+                if(data.results && data.results.length > 0) {
+                    data.results.forEach(product => {
+                        let div = document.createElement('div');
+                        div.className = 'px-4 py-3 hover:bg-blue-50 dark:hover:bg-slate-700 cursor-pointer text-sm text-slate-700 dark:text-slate-200 border-b border-gray-100 dark:border-gray-700 last:border-0';
+                        div.innerHTML = `<span class="font-bold font-mono text-blue-600 dark:text-blue-400">${product.part_no}</span> - ${product.part_name}`;
+                        div.addEventListener('click', function() {
+                            partNoInput.value = product.part_no;
+                            partNameInput.value = product.part_name;
+                            searchInput.value = product.part_no;
+                            searchResults.classList.add('hidden');
+
+                            // Otomatis pilih process routing jika tersedia dari master_routings
+                            if (product.process_name) {
+                                const processSelect = document.getElementById('process');
+                                if (processSelect) {
+                                    let optionExists = Array.from(processSelect.options).some(opt => opt.value === product.process_name);
+                                    if (optionExists) {
+                                        processSelect.value = product.process_name;
+                                    }
+                                }
+                            }
+                        });
+                        searchResults.appendChild(div);
+                    });
+                    searchResults.classList.remove('hidden');
+                } else {
+                    searchResults.innerHTML = '<div class="px-4 py-3 text-sm text-slate-500 dark:text-slate-400 italic">Tidak ada part ditemukan...</div>';
+                    searchResults.classList.remove('hidden');
+                }
+            })
+            .catch(error => console.error('Error fetching products:', error));
+        }
+
+        searchInput.addEventListener('focus', function() {
+            if (this.value.length === 0) {
+                fetchProducts('');
+            } else {
+                searchResults.classList.remove('hidden');
+            }
+        });
+
         searchInput.addEventListener('input', function() {
             clearTimeout(debounceTimer);
             const query = this.value;
@@ -135,54 +188,8 @@
             partNoInput.value = '';
             partNameInput.value = '';
 
-            if (query.length < 2) {
-                searchResults.classList.add('hidden');
-                return;
-            }
-
             debounceTimer = setTimeout(() => {
-                fetch("{{ route('api.data.products') }}", {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                    },
-                    body: JSON.stringify({ search: query, model_id: modelId })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    searchResults.innerHTML = '';
-                    if(data.results && data.results.length > 0) {
-                        data.results.forEach(product => {
-                            let div = document.createElement('div');
-                            div.className = 'px-4 py-3 hover:bg-blue-50 dark:hover:bg-slate-700 cursor-pointer text-sm text-slate-700 dark:text-slate-200 border-b border-gray-100 dark:border-gray-700 last:border-0';
-                            div.innerHTML = `<span class="font-bold font-mono text-blue-600 dark:text-blue-400">${product.part_no}</span> - ${product.part_name}`;
-                            div.addEventListener('click', function() {
-                                partNoInput.value = product.part_no;
-                                partNameInput.value = product.part_name;
-                                searchInput.value = product.part_no;
-                                searchResults.classList.add('hidden');
-
-                                // Otomatis pilih process routing jika tersedia dari master_routings
-                                if (product.process_name) {
-                                    const processSelect = document.getElementById('process');
-                                    if (processSelect) {
-                                        let optionExists = Array.from(processSelect.options).some(opt => opt.value === product.process_name);
-                                        if (optionExists) {
-                                            processSelect.value = product.process_name;
-                                        }
-                                    }
-                                }
-                            });
-                            searchResults.appendChild(div);
-                        });
-                        searchResults.classList.remove('hidden');
-                    } else {
-                        searchResults.innerHTML = '<div class="px-4 py-3 text-sm text-slate-500 dark:text-slate-400 italic">Tidak ada part ditemukan...</div>';
-                        searchResults.classList.remove('hidden');
-                    }
-                })
-                .catch(error => console.error('Error fetching products:', error));
+                fetchProducts(query);
             }, 300);
         });
 

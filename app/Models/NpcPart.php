@@ -22,7 +22,8 @@ class NpcPart extends Model
         'status',
         'qc_target_date',
         'mgm_target_date',
-        'condition'
+        'condition',
+        'delivered_qty'
     ];
 
     public function purchaseOrder()

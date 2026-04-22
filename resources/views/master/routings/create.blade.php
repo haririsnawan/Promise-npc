@@ -55,8 +55,11 @@
 
                     <div id="process_container" class="space-y-3">
                         <!-- Dynamic processes -->
-                        <div class="process-item flex gap-3 items-start" data-index="0">
-                            <div class="w-10 text-center font-bold text-gray-400 dark:text-gray-500 mt-2">1.</div>
+                        <div class="process-item flex gap-3 items-start bg-white dark:bg-gray-800 p-2 rounded border border-transparent hover:border-gray-200 dark:hover:border-gray-700" data-index="0">
+                            <div class="w-12 text-center font-bold text-gray-400 dark:text-gray-500 mt-2 flex items-center justify-center gap-1">
+                                <span class="cursor-move text-gray-400 hover:text-gray-600"><i class="fa-solid fa-grip-vertical"></i></span>
+                                <span class="seq-num">1.</span>
+                            </div>
                             <div class="flex-1 grid grid-cols-1 md:grid-cols-2 gap-3">
                                 <select name="process_ids[]" required class="process-select w-full rounded-lg border-gray-300 dark:border-gray-600 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm dark:bg-gray-700 dark:text-white">
                                     <option value="">Pilih Proses</option>
@@ -184,15 +187,18 @@
         function updateSequenceNumbers() {
             const items = container.querySelectorAll('.process-item');
             items.forEach((item, idx) => {
-                item.querySelector('.font-bold').textContent = (idx + 1) + '.';
+                item.querySelector('.seq-num').textContent = (idx + 1) + '.';
             });
         }
 
         addBtn.addEventListener('click', function() {
             processCount++;
             const itemHtml = `
-                <div class="process-item flex gap-3 items-start" data-index="${processCount}">
-                    <div class="w-10 text-center font-bold text-gray-400 dark:text-gray-500 mt-2"></div>
+                <div class="process-item flex gap-3 items-start bg-white dark:bg-gray-800 p-2 rounded border border-transparent hover:border-gray-200 dark:hover:border-gray-700" data-index="${processCount}">
+                    <div class="w-12 text-center font-bold text-gray-400 dark:text-gray-500 mt-2 flex items-center justify-center gap-1">
+                        <span class="cursor-move text-gray-400 hover:text-gray-600"><i class="fa-solid fa-grip-vertical"></i></span>
+                        <span class="seq-num"></span>
+                    </div>
                     <div class="flex-1 grid grid-cols-1 md:grid-cols-2 gap-3">
                         <select name="process_ids[]" required class="process-select w-full rounded-lg border-gray-300 dark:border-gray-600 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm dark:bg-gray-700 dark:text-white">
                             ${processOptions}
@@ -231,6 +237,17 @@
         });
 
         updateSequenceNumbers();
+
+        if (typeof Sortable !== 'undefined') {
+            new Sortable(container, {
+                handle: '.cursor-move',
+                animation: 150,
+                ghostClass: 'bg-gray-100',
+                onEnd: function() {
+                    updateSequenceNumbers();
+                }
+            });
+        }
     });
 </script>
 @endpush

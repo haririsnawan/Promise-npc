@@ -31,7 +31,7 @@
                     <tr class="bg-white dark:bg-gray-800 border-b dark:border-gray-700 hover:bg-blue-50/50 dark:hover:bg-gray-700/30 transition group">
                         <td class="px-6 py-4 font-medium text-slate-500 dark:text-slate-400">{{ $i + 1 }}</td>
                         <td class="px-6 py-4 font-medium text-slate-800 dark:text-gray-200">
-                            {{ $category->customer ? $category->customer->name : 'N/A' }}
+                            {{ $category->customer ? $category->customer->code : 'N/A' }}
                         </td>
                         <td class="px-6 py-4 font-bold text-slate-900 dark:text-white">{{ $category->name }}</td>
                         <td class="px-6 py-4 text-center">

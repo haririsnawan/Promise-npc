@@ -17,7 +17,7 @@
                 <i class="fa-solid fa-clipboard-check text-blue-500 mr-2"></i> PART EVENT DELIVERY CHECKSHEET
             </h2>
             <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                <strong>Part No:</strong> {{ optional($part->product)->part_no ?? 'N/A' }} | <strong>Customer:</strong> {{ optional(optional($part)->event)->customer->customer_name ?? 'N/A' }}
+                <strong>Part No:</strong> {{ optional($part->product)->part_no ?? 'N/A' }} | <strong>Customer:</strong> {{ optional(optional(optional($part->event)->customerCategory)->customer)->code ?? 'N/A' }}
             </p>
         </div>
         <div>
@@ -57,6 +57,16 @@
         @csrf
         @method('PUT')
         <input type="hidden" name="role" value="{{ $role }}">
+
+        @if ($errors->any())
+            <div class="px-6 py-4 mx-6 mt-4 bg-red-50 border border-red-200 text-red-600 rounded-lg text-sm">
+                <ul class="list-disc pl-5 space-y-1">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
 
         <div class="p-6">
             @if(!$isMGM)
@@ -219,7 +229,7 @@
                         <label class="font-bold text-gray-800 dark:text-white text-base">Keputusan Akhir (MGM Decision):</label>
                         <select name="final_result" required
                                 class="rounded-lg border-purple-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 sm:text-base py-2 pl-3 pr-10 font-bold text-gray-800 dark:bg-gray-800 dark:text-white dark:border-gray-600 min-w-[200px]">
-                            <option value="Pending" {{ $checksheet->final_result == 'Pending' ? 'selected' : '' }}>PENDING</option>
+                            <option value="" {{ $checksheet->final_result == 'Pending' || empty($checksheet->final_result) ? 'selected' : '' }} disabled class="text-gray-400">-- PILIH KEPUTUSAN --</option>
                             <option value="OK" class="text-green-600" {{ $checksheet->final_result == 'OK' ? 'selected' : '' }}>✅ APPROVED (OK)</option>
                             <option value="NG" class="text-red-600" {{ $checksheet->final_result == 'NG' ? 'selected' : '' }}>❌ REJECTED (NG)</option>
                             <option value="Need Improvement" class="text-yellow-600" {{ $checksheet->final_result == 'Need Improvement' ? 'selected' : '' }}>⚠️ NEED IMPROVEMENT</option>

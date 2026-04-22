@@ -91,7 +91,12 @@
                             <div class="text-xs text-gray-500 dark:text-gray-400 font-medium">{{ optional($part->product)->part_name }}</div>
                         </td>
                         <td class="px-6 py-4">
-                            <div class="text-gray-800 dark:text-gray-300 font-bold text-sm">{{ $part->qty }} PCS</div>
+                            <div class="text-gray-800 dark:text-gray-300 font-bold text-sm">{{ number_format($part->qty) }} PCS</div>
+                            @if($part->delivered_qty > 0)
+                            <div class="text-[11px] font-bold text-blue-600 dark:text-blue-400 mt-1">
+                                <i class="fa-solid fa-truck-ramp-box"></i> Terkirim: {{ number_format($part->delivered_qty) }} / {{ number_format($part->qty) }}
+                            </div>
+                            @endif
                             <div class="text-xs text-red-500 font-medium mt-1"><i class="fa-regular fa-calendar md:mr-1"></i> {{ \Carbon\Carbon::parse($part->delivery_date)->format('d M y') }}</div>
                         </td>
                         <td class="px-6 py-4 font-medium align-middle" colspan="2">
@@ -108,9 +113,10 @@
                                         ['icon' => 'fa-boxes-stacked', 'title' => 'Stok'],
                                     ];
                                     if($part->status === 'CLOSED') $currentIndex = 5; // To fill the entire bar
+                                    if($part->status === 'OUTSTANDING') $currentIndex = 4;
                                     
                                     // Check overdue based on delivery_date
-                                    $isOverdue = \Carbon\Carbon::parse($part->delivery_date)->endOfDay()->isPast() && !in_array($part->status, ['FINISHED', 'CLOSED']);
+                                    $isOverdue = \Carbon\Carbon::parse($part->delivery_date)->endOfDay()->isPast() && !in_array($part->status, ['CLOSED']);
                                 @endphp
                                 
                                 <div class="flex w-full">
@@ -158,9 +164,12 @@
                                 </div>
                             </div>
                             
-                            @if($part->status === 'CLOSED')
+                            @if(in_array($part->status, ['CLOSED', 'OUTSTANDING']))
                                 <div class="mt-4 text-center">
-                                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200 text-[10px] font-bold tracking-wide shadow-sm"><i class="fa-solid fa-flag-checkered"></i> PROJECT CLOSED (TERKIRIM)</span>
+                                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full {{ $part->status === 'CLOSED' ? 'bg-emerald-100 text-emerald-800 border-emerald-200' : 'bg-blue-100 text-blue-800 border-blue-200' }} text-[10px] font-bold tracking-wide shadow-sm">
+                                        <i class="fa-solid {{ $part->status === 'CLOSED' ? 'fa-flag-checkered' : 'fa-truck-fast' }}"></i> 
+                                        {{ $part->status === 'CLOSED' ? 'PROJECT CLOSED (TERKIRIM)' : 'PENGIRIMAN PARSIAL' }}
+                                    </span>
                                 </div>
                             @endif
                         </td>

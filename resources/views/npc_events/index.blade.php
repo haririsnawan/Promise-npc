@@ -41,7 +41,7 @@
                         <td class="px-6 py-4 text-blue-900 dark:text-blue-400 font-semibold text-sm">{{ optional($event->customerCategory)->name ?? '-' }}</td>
                         <td class="px-6 py-4 text-slate-600 dark:text-slate-400 text-sm">
                             <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 font-medium">
-                                {{ optional(optional($event->customerCategory)->customer)->name ?? '-' }}
+                                {{ optional(optional($event->customerCategory)->customer)->code ?? '-' }}
                             </span>
                         </td>
                         <td class="px-6 py-4 text-gray-600 dark:text-gray-400 text-sm font-medium">{{ optional(optional(optional($event->parts->first())->product)->vehicleModel)->name ?? '-' }}</td>

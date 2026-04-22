@@ -169,7 +169,17 @@
             // If data is really empty, we just show empty state
             emptyState.classList.remove('hidden');
         }
-        
+
+        if (typeof Sortable !== 'undefined') {
+            new Sortable(container, {
+                handle: '.cursor-move',
+                animation: 150,
+                ghostClass: 'bg-gray-100',
+                onEnd: function() {
+                    updateRowNumbers();
+                }
+            });
+        }
     });
 </script>
 @endpush

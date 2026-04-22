@@ -102,13 +102,14 @@
                                     $pIndex = array_search($p->status, $phases);
                                     if ($pIndex === false) $pIndex = -1;
                                     if ($p->status === 'CLOSED') $pIndex = 5;
+                                    if ($p->status === 'OUTSTANDING') $pIndex = 4;
                                     
                                     if ($pIndex >= $idx) $rCount++;
-                                    if ($pIndex > $idx || ($idx == 4 && in_array($p->status, ['FINISHED', 'CLOSED']))) {
+                                    if ($pIndex > $idx || ($idx == 4 && in_array($p->status, ['CLOSED']))) {
                                         $pCount++;
                                     }
                                     
-                                    if (!in_array($p->status, ['FINISHED', 'CLOSED'])) {
+                                    if (!in_array($p->status, ['CLOSED'])) {
     $isDeliveryLate = \Carbon\Carbon::parse($p->delivery_date)->endOfDay()->isPast();
     
     // Cek apakah ada sub-proses yang terlambat di tabel npc_part_processes
@@ -232,7 +233,7 @@
                             <td class="px-6 py-4 text-right align-top">
                                 <div class="text-[11px] font-medium text-gray-500 text-right w-full flex flex-col items-end gap-1">
                                     <span class="bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded border border-gray-200 dark:border-gray-600">IN: {{ $po->created_at->format('d M y') }}</span>
-                                    @if(isset($reachedCounts[4]) && $reachedCounts[4] === $totalParts && $totalParts > 0)
+                                    @if($poParts->where('status', 'CLOSED')->count() === $totalParts && $totalParts > 0)
                                         <span class="bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 px-2 py-1 rounded border border-emerald-200 shadow-sm mt-1 font-bold"><i class="fa-solid fa-check-double"></i> COMPLETE</span>
                                     @else
                                         <span class="text-amber-600 font-bold mt-1 tracking-wide"><i class="fa-solid fa-spinner fa-spin"></i> ACTIVE</span>
@@ -308,8 +309,13 @@
                                                         <div class="text-[10px] text-gray-500 mt-0.5">{{ optional($part->product)->part_name }}</div>
                                                     </td>
                                                     <td class="px-4 py-3">
-                                                        <div class="font-bold text-gray-700">{{ $part->qty }} PCS</div>
-                                                        <div class="text-[10px] {{ \Carbon\Carbon::parse($part->delivery_date)->endOfDay()->isPast() && !in_array($part->status, ['FINISHED', 'CLOSED']) ? 'text-red-500 font-bold' : 'text-gray-500' }} mt-0.5">
+                                                        <div class="font-bold text-gray-700">{{ number_format($part->qty) }} PCS</div>
+                                                        @if($part->delivered_qty > 0)
+                                                        <div class="text-[10px] font-bold text-blue-600 mt-0.5">
+                                                            <i class="fa-solid fa-truck-ramp-box"></i> Kirim: {{ number_format($part->delivered_qty) }} / {{ number_format($part->qty) }}
+                                                        </div>
+                                                        @endif
+                                                        <div class="text-[10px] {{ \Carbon\Carbon::parse($part->delivery_date)->endOfDay()->isPast() && !in_array($part->status, ['CLOSED']) ? 'text-red-500 font-bold' : 'text-gray-500' }} mt-0.5">
                                                             <i class="fa-regular fa-calendar md:mr-1"></i> {{ \Carbon\Carbon::parse($part->delivery_date)->format('d M Y') }}
                                                         </div>
                                                     </td>
@@ -328,6 +334,7 @@
                                                            $pIndex = array_search($part->status, $phases);
 if ($pIndex === false) $pIndex = -1;
 if ($part->status === 'CLOSED') $pIndex = 5;
+if ($part->status === 'OUTSTANDING') $pIndex = 4;
 
 // 1. Cek keterlambatan dari target pengiriman akhir
 $isDeliveryOverdue = \Carbon\Carbon::parse($part->delivery_date)->endOfDay()->isPast();
@@ -347,7 +354,7 @@ if ($part->processes) {
 }
 
 // 3. Gabungkan logika: Node merah jika target akhir lewat ATAU target proses lewat
-$pOverdue = ($isDeliveryOverdue || $hasLateProcess) && !in_array($part->status, ['FINISHED', 'CLOSED']);
+$pOverdue = ($isDeliveryOverdue || $hasLateProcess) && !in_array($part->status, ['CLOSED']);
                                                         @endphp
                                                         <div class="flex items-start w-full min-w-[200px] pt-1">
                                                             @foreach($stepsArr as $sIdx => $stepObj)
@@ -361,7 +368,7 @@ $pOverdue = ($isDeliveryOverdue || $hasLateProcess) && !in_array($part->status, 
                                                                         $lineBg = "bg-emerald-500";
                                                                     }
                                                                     
-                                                                    if ($isPast || ($isReached && $sIdx == 4 && in_array($part->status, ['FINISHED', 'CLOSED']))) {
+                                                                    if ($isPast || ($isReached && $sIdx == 4 && in_array($part->status, ['CLOSED']))) {
                                                                         $circleBorder = "border-emerald-500 bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600";
                                                                         if ($isActive) $circleBorder .= " ring-2 ring-emerald-100";
                                                                     } else if ($isActive) {
@@ -382,7 +389,7 @@ $pOverdue = ($isDeliveryOverdue || $hasLateProcess) && !in_array($part->status, 
                                                                     @if($stepObj['title'] === 'Part Making')
                                                                         <div @click="expandedPM = expandedPM === {{ $part->id }} ? null : {{ $part->id }}" class="z-10 relative border-2 {{ $circleBorder }} w-5 h-5 flex items-center justify-center rounded-full text-[8px] transition-all duration-300 bg-white cursor-pointer hover:scale-125 hover:shadow-md" title="Klik untuk melihat Detail Rute Part Making">
                                                                             <i class="fa-solid {{ $stepObj['icon'] }}"></i>
-                                                                            @if($isPast || ($isReached && $sIdx == 4 && in_array($part->status, ['FINISHED', 'CLOSED'])))
+                                                                            @if($isPast || ($isReached && $sIdx == 4 && in_array($part->status, ['CLOSED'])))
                                                                                 <div class="absolute -bottom-1 -right-1 bg-white rounded-full w-2.5 h-2.5 flex items-center justify-center text-[7px] text-emerald-600">
                                                                                     <i class="fa-solid fa-circle-check"></i>
                                                                                 </div>
@@ -391,7 +398,7 @@ $pOverdue = ($isDeliveryOverdue || $hasLateProcess) && !in_array($part->status, 
                                                                     @else
                                                                         <div class="z-10 relative border-2 {{ $circleBorder }} w-5 h-5 flex items-center justify-center rounded-full text-[8px] transition-all duration-300 bg-white">
                                                                             <i class="fa-solid {{ $stepObj['icon'] }}"></i>
-                                                                            @if($isPast || ($isReached && $sIdx == 4 && in_array($part->status, ['FINISHED', 'CLOSED'])))
+                                                                            @if($isPast || ($isReached && $sIdx == 4 && in_array($part->status, ['CLOSED'])))
                                                                                 <div class="absolute -bottom-1 -right-1 bg-white rounded-full w-2.5 h-2.5 flex items-center justify-center text-[7px] text-emerald-600">
                                                                                     <i class="fa-solid fa-circle-check"></i>
                                                                                 </div>

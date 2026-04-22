@@ -13,15 +13,15 @@
     <div class="p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <div>
             <span class="block text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase text-gray-500">Event Name</span>
-            <span class="block text-sm font-medium text-gray-800 dark:text-gray-200">{{ $event->event_name }}</span>
+            <span class="block text-sm font-medium text-gray-800 dark:text-gray-200">{{ optional($event->customerCategory)->name ?? '-' }}</span>
         </div>
         <div>
             <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Customer</span>
-            <span class="block text-sm font-medium text-gray-800 dark:text-gray-200">{{ optional($event->customer)->name ?? '-' }}</span>
+            <span class="block text-sm font-medium text-gray-800 dark:text-gray-200">{{ optional(optional($event->customerCategory)->customer)->code ?? '-' }}</span>
         </div>
         <div>
             <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Model</span>
-            <span class="block text-sm font-medium text-gray-800 dark:text-gray-200">{{ optional($event->vehicleModel)->name ?? '-' }}</span>
+            <span class="block text-sm font-medium text-gray-800 dark:text-gray-200">{{ optional(optional(optional($event->parts->first())->product)->vehicleModel)->name ?? '-' }}</span>
         </div>
         <div>
             <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Delivery To</span>
