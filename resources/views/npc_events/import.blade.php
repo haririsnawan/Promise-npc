@@ -84,15 +84,7 @@
                 </div>
             </div>
 
-            <div class="space-y-1">
-                <label for="event_select" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                    Master Event (Nama Project)
-                </label>
-                <select id="event_select" name="master_event_id" disabled data-placeholder="Pilih Master Event (Opsional)..."
-                    class="select2 w-full">
-                    <option value="">Pilih Event (Opsional)</option>
-                </select>
-            </div>
+
 
             <div class="space-y-1">
                 <label for="delivery_to" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -163,10 +155,7 @@
         categorySelect.disabled = true;
         $(categorySelect).trigger('change.select2');
         
-        const eventSelect = document.getElementById('event_select');
-        eventSelect.innerHTML = '<option value="">Pilih Event</option>';
-        eventSelect.disabled = true;
-        $(eventSelect).trigger('change.select2');
+
 
         if(customerId) {
             // Menggunakan proxy API Internal untuk menghindari CORS
@@ -233,47 +222,7 @@
         }
     });
 
-    $('#model_id').on('change', function() {
-        const customerId = $('#customer_id').val();
-        const modelId = this.value;
-        const eventSelect = document.getElementById('event_select');
-        
-        eventSelect.innerHTML = '<option value="">Memuat data...</option>';
-        eventSelect.disabled = true;
-        $(eventSelect).trigger('change.select2');
-        
-        if(customerId && modelId) {
-            fetch("{{ route('api.data.master-events') }}", {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                },
-                body: JSON.stringify({ customer_id: customerId, model_id: modelId })
-            })
-            .then(response => response.json())
-            .then(data => {
-                eventSelect.innerHTML = '<option value="">Pilih Event</option>';
-                if(data.results && data.results.length > 0) {
-                    data.results.forEach(ev => {
-                        eventSelect.innerHTML += `<option value="${ev.id}">${ev.text}</option>`;
-                    });
-                    eventSelect.disabled = false;
-                } else {
-                    eventSelect.innerHTML = '<option value="">Belum ada Master Event (Tambah via Master Data)</option>';
-                }
-                $(eventSelect).trigger('change.select2');
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                eventSelect.innerHTML = '<option value="">Gagal memuat data</option>';
-                $(eventSelect).trigger('change.select2');
-            });
-        } else {
-            eventSelect.innerHTML = '<option value="">Pilih Event</option>';
-            $(eventSelect).trigger('change.select2');
-        }
-    });
+
 
     // Logika menampilkan nama file Excel saat diselect
     document.getElementById('file').addEventListener('change', function(e) {

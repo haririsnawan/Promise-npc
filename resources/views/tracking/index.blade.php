@@ -81,7 +81,7 @@
                     @forelse($parts as $part)
                     <tr class="bg-white dark:bg-gray-800 border-b dark:border-gray-700 hover:bg-blue-50/50 dark:hover:bg-gray-700/30 transition group text-sm {{ $statusParam !== 'all' && $part->status !== $statusParam ? 'opacity-60 grayscale-[0.3]' : '' }}">
                         <td class="px-6 py-4">
-                            <div class="text-blue-600 dark:text-blue-400 font-bold text-xs uppercase tracking-wide border border-blue-100 dark:border-blue-900 bg-blue-50 dark:bg-blue-900/30 px-2 py-1 rounded inline-block">{{ optional(optional(optional($part->purchaseOrder)->event)->masterEvent)->name ?? optional(optional(optional($part->purchaseOrder)->event)->customerCategory)->name ?? 'Unknown Event' }}</div>
+                            <div class="text-blue-600 dark:text-blue-400 font-bold text-xs uppercase tracking-wide border border-blue-100 dark:border-blue-900 bg-blue-50 dark:bg-blue-900/30 px-2 py-1 rounded inline-block">{{ optional(optional(optional($part->purchaseOrder)->event)->customerCategory)->name ?? 'Unknown Event' }}</div>
                         </td>
                         <td class="px-6 py-4 text-gray-700 dark:text-gray-300 font-semibold text-sm">
                             {{ optional($part->purchaseOrder)->po_no }}
@@ -168,7 +168,28 @@
                             <div class="text-[11px] font-medium text-gray-500 text-right w-full flex flex-col items-end gap-1">
                                 <span class="bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded border border-gray-200 dark:border-gray-600">IN: {{ $part->created_at->format('d M Y') }}</span>
                                 @if($part->status === 'CLOSED')
-                                    <span class="bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 px-2 py-1 rounded border border-emerald-200 dark:border-emerald-800 shadow-sm mt-1">OUT: {{ $part->actual_delivery ? \Carbon\Carbon::parse($part->actual_delivery)->format('d M Y') : '-' }}</span>
+                                    <span class="bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded border border-gray-200 dark:border-gray-600 mt-1">OUT: <strong>{{ $part->actual_delivery ? \Carbon\Carbon::parse($part->actual_delivery)->format('d M Y') : '-' }}</strong></span>
+                                    @if($part->actual_delivery)
+                                        @php
+                                            $targetDate = \Carbon\Carbon::parse($part->delivery_date)->startOfDay();
+                                            $actualDate = \Carbon\Carbon::parse($part->actual_delivery)->startOfDay();
+                                            $diffDays = (int)$targetDate->diffInDays($actualDate, false);
+                                            
+                                            if ($diffDays > 0) {
+                                                $statusClass = "bg-red-100 text-red-700 border-red-200";
+                                                $statusText = '<i class="fa-solid fa-circle-exclamation"></i> Telat ' . $diffDays . ' Hari';
+                                            } elseif ($diffDays < 0) {
+                                                $statusClass = "bg-blue-100 text-blue-700 border-blue-200";
+                                                $statusText = '<i class="fa-solid fa-bolt"></i> Lebih Cpt ' . abs($diffDays) . ' Hari';
+                                            } else {
+                                                $statusClass = "bg-green-100 text-green-700 border-green-200";
+                                                $statusText = '<i class="fa-solid fa-check-double"></i> Tepat Waktu';
+                                            }
+                                        @endphp
+                                        <span class="inline-flex items-center gap-1 mt-1.5 px-2 py-0.5 rounded text-[10px] font-black tracking-wider uppercase border {{ $statusClass }}">
+                                            {!! $statusText !!}
+                                        </span>
+                                    @endif
                                 @else
                                     <span class="text-amber-600 font-bold mt-1 tracking-wide"><i class="fa-solid fa-hourglass-half animate-pulse"></i> {{ str_replace(' ago', '', $part->created_at->diffForHumans()) }}</span>
                                 @endif

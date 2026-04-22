@@ -41,7 +41,7 @@ class AppServiceProvider extends ServiceProvider
                         (object)['title' => 'Setup Routing Produksi', 'route' => 'tracking.setup'],
                         (object)['title' => 'Proses Produksi', 'route' => 'tracking.production'],
                         (object)['title' => 'Pemeriksaan Kualitas (QC)', 'route' => 'tracking.qc'],
-                        (object)['title' => 'Persetujuan Management', 'route' => 'tracking.mgm'],
+                        (object)['title' => 'Management Check', 'route' => 'tracking.mgm'],
                         (object)['title' => 'Stok Barang Jadi', 'route' => 'tracking.stock'],
                         (object)['title' => 'Riwayat Kirim', 'route' => 'tracking.history'],
                     ])
@@ -56,11 +56,10 @@ class AppServiceProvider extends ServiceProvider
                         (object)['title' => 'Master Department', 'route' => 'master.departments.index'],
                         (object)['title' => 'Master Proses', 'route' => 'master.processes.index'],
                         (object)['title' => 'Routing per Part ID', 'route' => 'master.routings.index'],
-                        (object)['title' => 'Master Poin QA', 'route' => 'master.checkpoints.index'],
+                        (object)['title' => 'Master Poin QE', 'route' => 'master.checkpoints.index'],
                         (object)['title' => 'Master Checksheet Part', 'route' => 'master.checksheets.index'],
                         (object)['title' => 'Master Grup Pengiriman', 'route' => 'master.delivery-groups.index'],
                         (object)['title' => 'Master Tujuan Kirim', 'route' => 'master.delivery-targets.index'],
-                        (object)['title' => 'Master Event Project', 'route' => 'master.events.index'],
                         (object)['title' => 'Data Event (PO)', 'route' => 'events.index'],
                     ])
                 ],

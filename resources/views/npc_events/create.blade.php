@@ -47,17 +47,6 @@
                     @error('model_id') <span class="text-xs text-red-500">{{ $message }}</span> @enderror
                 </div>
 
-                <!-- Master Event Select -->
-                <div class="space-y-1">
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                        Master Event (Nama Project)
-                    </label>
-                    <select name="master_event_id" id="event_select" data-placeholder="Pilih Master Event (Opsional)..."
-                        class="select2 w-full">
-                        <option value="">Pilih Event (Opsional)</option>
-                    </select>
-                    @error('master_event_id') <span class="text-xs text-red-500">{{ $message }}</span> @enderror
-                </div>
 
                 <!-- Category Select -->
                 <div class="space-y-1">
@@ -229,59 +218,12 @@
             });
         }
 
-        const eventSelect = document.getElementById('event_select');
-        const oldEventId = "{{ old('master_event_id') }}";
-
-        function loadEvents(customerId, modelId, selectedEventId = null) {
-            eventSelect.innerHTML = '<option value="">Memuat...</option>';
-            eventSelect.disabled = true;
-            $(eventSelect).trigger('change.select2');
-            
-            if (!customerId || !modelId) {
-                eventSelect.innerHTML = '<option value="">Pilih Event</option>';
-                eventSelect.disabled = true;
-                $(eventSelect).trigger('change.select2');
-                return;
-            }
-
-            fetch("{{ route('api.data.master-events') }}", {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                },
-                body: JSON.stringify({ customer_id: customerId, model_id: modelId })
-            })
-            .then(response => response.json())
-            .then(data => {
-                eventSelect.innerHTML = '<option value="">Pilih Event</option>';
-                if(data.results && data.results.length > 0) {
-                    data.results.forEach(ev => {
-                        let isSelected = selectedEventId == ev.id ? 'selected' : '';
-                        eventSelect.innerHTML += `<option value="${ev.id}" ${isSelected}>${ev.text}</option>`;
-                    });
-                    eventSelect.disabled = false;
-                } else {
-                    eventSelect.innerHTML = '<option value="">Belum ada Master Event (Tambah via Master Data)</option>';
-                }
-                $(eventSelect).trigger('change.select2');
-            })
-            .catch(error => {
-                console.error('Error fetching events:', error);
-                eventSelect.innerHTML = '<option value="">-- Gagal memuat data --</option>';
-                $(eventSelect).trigger('change.select2');
-            });
-        }
 
         $('#customer_select').on('change', function() {
             loadModels(this.value);
             loadCategories(this.value);
-            loadEvents(this.value, modelSelect.value);
         });
 
-        $('#model_select').on('change', function() {
-            loadEvents(customerSelect.value, this.value);
-        });
 
         // Load models & categories if customer was already selected (e.g. back validation error)
         if (customerSelect.value) {
@@ -289,9 +231,7 @@
             loadCategories(customerSelect.value, oldCategoryId);
         }
         
-        if (customerSelect.value && oldModelId) {
-             loadEvents(customerSelect.value, oldModelId, oldEventId);
-        }
+
 
         // --- Dynamic Parts Logic ---
         const partsContainer = document.getElementById('parts_container');

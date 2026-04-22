@@ -18,7 +18,7 @@ class NpcEventController extends Controller
      */
     public function index()
     {
-        $events = \App\Models\NpcEvent::with(['masterEvent.customer', 'masterEvent.vehicleModel', 'customerCategory', 'deliveryGroup'])->latest()->paginate(10);
+        $events = \App\Models\NpcEvent::with(['customerCategory', 'deliveryGroup'])->latest()->paginate(10);
         return view('npc_events.index', compact('events'));
     }
 
@@ -44,8 +44,8 @@ class NpcEventController extends Controller
         $request->validate([
             'customer_id' => 'required', // Needed for flow Validation
             'model_id' => 'required', // Needed to validate parts
-            'master_event_id' => 'nullable|exists:npc_master_events,id',
             'customer_category_id' => 'required|exists:npc_customer_categories,id',
+
             'delivery_group_id' => 'required|exists:npc_delivery_groups,id',
             'delivery_to' => 'nullable|string|max:255',
             'parts' => 'required|array|min:1',
@@ -64,7 +64,6 @@ class NpcEventController extends Controller
         ]);
 
         $event = \App\Models\NpcEvent::create([
-            'master_event_id' => $request->master_event_id,
             'customer_category_id' => $request->customer_category_id,
             'delivery_group_id' => $request->delivery_group_id,
             'delivery_to' => $request->delivery_to,
@@ -117,33 +116,30 @@ class NpcEventController extends Controller
 
     public function edit(\App\Models\NpcEvent $event)
     {
-        $event->load('masterEvent', 'customerCategory', 'parts.product');
-        $masterCustomerId = optional($event->masterEvent)->customer_id ?? optional($event->customerCategory)->customer_id;
-        $masterModelId = optional($event->masterEvent)->model_id ?? optional(optional($event->parts->first())->product)->model_id;
+        $event->load('customerCategory', 'parts.product');
+        $masterCustomerId = optional($event->customerCategory)->customer_id;
+        $masterModelId = optional(optional($event->parts->first())->product)->model_id;
         
         $customers = \App\Models\Customer::orderBy('name')->get();
         $models = \App\Models\VehicleModel::where('customer_id', $masterCustomerId)->orderBy('name')->get();
-        $master_events = \App\Models\NpcMasterEvent::where('model_id', $masterModelId)->orderBy('name')->get();
         
         $customer_categories = NpcCustomerCategory::where('customer_id', $masterCustomerId)->orderBy('name')->get();
         $delivery_groups = NpcDeliveryGroup::orderBy('name')->get();
 
         $delivery_targets = \App\Models\NpcDeliveryTarget::where('is_active', true)->orderBy('target_name')->get();
 
-        return view('npc_events.edit', compact('event', 'customers', 'models', 'master_events', 'customer_categories', 'delivery_groups', 'delivery_targets', 'masterCustomerId', 'masterModelId'));
+        return view('npc_events.edit', compact('event', 'customers', 'models', 'customer_categories', 'delivery_groups', 'delivery_targets', 'masterCustomerId', 'masterModelId'));
     }
 
     public function update(Request $request, \App\Models\NpcEvent $event)
     {
         $request->validate([
-            'master_event_id' => 'nullable|exists:npc_master_events,id',
             'customer_category_id' => 'required|exists:npc_customer_categories,id',
             'delivery_group_id' => 'required|exists:npc_delivery_groups,id',
             'delivery_to' => 'nullable|string|max:255',
         ]);
 
         $event->update([
-            'master_event_id' => $request->master_event_id,
             'customer_category_id' => $request->customer_category_id,
             'delivery_group_id' => $request->delivery_group_id,
             'delivery_to' => $request->delivery_to,
@@ -171,7 +167,6 @@ class NpcEventController extends Controller
         $request->validate([
             'customer_id' => 'required',
             'model_id' => 'required',
-            'master_event_id' => 'nullable',
             'customer_category_id' => 'required',
             'delivery_group_id' => 'required',
             'delivery_to' => 'nullable|string|max:255',
@@ -180,7 +175,6 @@ class NpcEventController extends Controller
 
         try {
             $event = NpcEvent::create([
-                'master_event_id' => $request->master_event_id,
                 'customer_category_id' => $request->customer_category_id,
                 'delivery_group_id' => $request->delivery_group_id,
                 'delivery_to' => $request->delivery_to,
@@ -224,7 +218,7 @@ class NpcEventController extends Controller
 
                 $po = \App\Models\NpcPurchaseOrder::firstOrCreate([
                     'npc_event_id' => $event->id,
-                    'po_no' => $row[0] ?? optional($event->masterEvent)->name ?? optional($event->customerCategory)->name ?? 'PO-'.time()
+                    'po_no' => $row[0] ?? optional($event->customerCategory)->name ?? 'PO-'.time()
                 ]);
                 
                 $product = \App\Models\Product::where('part_no', $row[1])->first();

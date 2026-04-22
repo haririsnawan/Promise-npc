@@ -12,16 +12,12 @@ class NpcEvent extends Model
     protected $table = 'npc_events';
 
     protected $fillable = [
-        'master_event_id',
+
         'delivery_to',
         'customer_category_id',
         'delivery_group_id'
     ];
 
-    public function masterEvent()
-    {
-        return $this->belongsTo(NpcMasterEvent::class, 'master_event_id');
-    }
 
     public function purchaseOrders()
     {
