@@ -86,11 +86,11 @@
 
             <div class="space-y-1">
                 <label for="event_select" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                    Master Event (Nama Project) <span class="text-red-500">*</span>
+                    Master Event (Nama Project)
                 </label>
-                <select id="event_select" name="master_event_id" required disabled data-placeholder="Pilih Master Event..."
+                <select id="event_select" name="master_event_id" disabled data-placeholder="Pilih Master Event (Opsional)..."
                     class="select2 w-full">
-                    <option value="">Pilih Event</option>
+                    <option value="">Pilih Event (Opsional)</option>
                 </select>
             </div>
 

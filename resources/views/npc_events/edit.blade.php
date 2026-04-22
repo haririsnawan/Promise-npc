@@ -54,11 +54,11 @@
                 <!-- Master Event Select -->
                 <div class="space-y-1">
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                        Master Event (Nama Project) <span class="text-red-500">*</span>
+                        Master Event (Nama Project)
                     </label>
-                    <select name="master_event_id" id="event_select" required data-placeholder="Pilih Master Event..."
+                    <select name="master_event_id" id="event_select" data-placeholder="Pilih Master Event (Opsional)..."
                         class="select2 w-full">
-                        <option value="">Pilih Event</option>
+                        <option value="">Pilih Event (Opsional)</option>
                         @foreach($master_events as $ev)
                             <option value="{{ $ev->id }}" {{ (old('master_event_id', $event->master_event_id) == $ev->id) ? 'selected' : '' }}>
                                 {{ $ev->name }}

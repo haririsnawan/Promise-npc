@@ -7,7 +7,7 @@
         <img src="{{ asset('assets/image/logo-promise.png') }}" alt="PROMISE" class="h-8 w-auto">
         <div x-show="sidebarExpanded" x-transition:enter="transition ease-out duration-200 delay-100" class="logo-label overflow-hidden whitespace-nowrap">
             <h1 class="text-sm font-bold text-slate-900 dark:text-white leading-tight">PROMISE</h1>
-            <p class="text-[10px] text-slate-500 dark:text-gray-400 uppercase tracking-wider">Inventory</p>
+            <p class="text-[10px] text-slate-500 dark:text-gray-400 uppercase tracking-wider">NPC</p>
         </div>
     </div>
 

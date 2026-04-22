@@ -50,11 +50,11 @@
                 <!-- Master Event Select -->
                 <div class="space-y-1">
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                        Master Event (Nama Project) <span class="text-red-500">*</span>
+                        Master Event (Nama Project)
                     </label>
-                    <select name="master_event_id" id="event_select" required data-placeholder="Pilih Master Event..."
+                    <select name="master_event_id" id="event_select" data-placeholder="Pilih Master Event (Opsional)..."
                         class="select2 w-full">
-                        <option value="">Pilih Event</option>
+                        <option value="">Pilih Event (Opsional)</option>
                     </select>
                     @error('master_event_id') <span class="text-xs text-red-500">{{ $message }}</span> @enderror
                 </div>

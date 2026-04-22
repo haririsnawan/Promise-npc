@@ -81,7 +81,7 @@
                     @forelse($parts as $part)
                     <tr class="bg-white dark:bg-gray-800 border-b dark:border-gray-700 hover:bg-blue-50/50 dark:hover:bg-gray-700/30 transition group text-sm {{ $statusParam !== 'all' && $part->status !== $statusParam ? 'opacity-60 grayscale-[0.3]' : '' }}">
                         <td class="px-6 py-4">
-                            <div class="text-blue-600 dark:text-blue-400 font-bold text-xs uppercase tracking-wide border border-blue-100 dark:border-blue-900 bg-blue-50 dark:bg-blue-900/30 px-2 py-1 rounded inline-block">{{ optional(optional(optional($part->purchaseOrder)->event)->masterEvent)->name ?? 'Unknown Event' }}</div>
+                            <div class="text-blue-600 dark:text-blue-400 font-bold text-xs uppercase tracking-wide border border-blue-100 dark:border-blue-900 bg-blue-50 dark:bg-blue-900/30 px-2 py-1 rounded inline-block">{{ optional(optional(optional($part->purchaseOrder)->event)->masterEvent)->name ?? optional(optional(optional($part->purchaseOrder)->event)->customerCategory)->name ?? 'Unknown Event' }}</div>
                         </td>
                         <td class="px-6 py-4 text-gray-700 dark:text-gray-300 font-semibold text-sm">
                             {{ optional($part->purchaseOrder)->po_no }}
