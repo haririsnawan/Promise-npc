@@ -28,7 +28,7 @@
                         <input type="text" id="part_search" autocomplete="off"
                             class="w-full rounded-lg border-gray-300 dark:border-gray-600 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm dark:bg-gray-700 dark:text-white"
                             style="padding-left: 2.5rem;"
-                            placeholder="Ketik Part No atau Part Name untuk mencari...">
+                            placeholder="Type Part No or Part Name to search...">
                         
                         <input type="hidden" id="part_id" name="part_id" required value="{{ old('part_id') }}">
                         

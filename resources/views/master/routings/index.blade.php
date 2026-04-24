@@ -33,7 +33,7 @@
                         <th scope="col" class="px-6 py-4 font-semibold w-16">#</th>
                         <th scope="col" class="px-6 py-4 font-semibold">Part No</th>
                         <th scope="col" class="px-6 py-4 font-semibold">Part Name</th>
-                        <th scope="col" class="px-6 py-4 font-semibold">Alur Process (Routing)</th>
+                        <th scope="col" class="px-6 py-4 font-semibold">Flow Process (Routing)</th>
                         <th scope="col" class="px-6 py-4 font-semibold text-right w-32">Action</th>
                     </tr>
                 </thead>

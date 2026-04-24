@@ -20,7 +20,7 @@
                 <thead class="bg-gray-100 dark:bg-gray-700/50 text-slate-800 dark:text-slate-200 border-b border-gray-200 dark:border-gray-600 uppercase text-xs tracking-wider">
                     <tr>
                         <th scope="col" class="px-6 py-4 font-semibold w-16">No</th>
-                        <th scope="col" class="px-6 py-4 font-semibold">Name Delivery Group (Misal: GR1, GR2)</th>
+                        <th scope="col" class="px-6 py-4 font-semibold">Name Delivery Group (Example: GR1, GR2)</th>
                         <th scope="col" class="px-6 py-4 font-semibold text-right w-24">Action</th>
                     </tr>
                 </thead>

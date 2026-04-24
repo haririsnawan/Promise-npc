@@ -36,7 +36,7 @@
                     </div>
                     <input type="text" id="process_name" name="process_name" required value="{{ old('process_name', $process->process_name) }}"
                         class="w-full rounded-lg border-gray-300 dark:border-gray-600 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm dark:bg-gray-700 dark:text-white"
-                        style="padding-left: 2.5rem;" placeholder="Contoh: Stamping, Painting, Assy, Weld...">
+                        style="padding-left: 2.5rem;" placeholder="Example: Stamping, Painting, Assy, Weld...">
                 </div>
             </div>
 
@@ -84,7 +84,7 @@
                                 @focus="open = true"
                                 class="w-full rounded-lg border-gray-300 dark:border-gray-600 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm dark:bg-gray-700 dark:text-white"
                                 style="padding-left: 2.5rem;" 
-                                placeholder="Ketik untuk mencari dan menambahkan department...">
+                                placeholder="Type to search and add department...">
                         </div>
                         
                         <!-- Dropdown Box -->

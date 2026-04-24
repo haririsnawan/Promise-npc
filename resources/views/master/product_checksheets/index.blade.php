@@ -10,7 +10,7 @@
             <h2 class="text-xl font-semibold text-gray-800 dark:text-white flex items-center gap-2">
                 <i class="fa-solid fa-list-check text-blue-500"></i> Master Checksheet per Part
             </h2>
-            <p class="text-sm text-gray-500 dark:text-gray-400 mt-1 pl-7">Kelola spesifikasi poin pengecekan QC untuk setiap nomor part.</p>
+            <p class="text-sm text-gray-500 dark:text-gray-400 mt-1 pl-7">Manage QC checkpoint specifications for each part number.</p>
         </div>
 
         <form method="GET" action="{{ route('master.checksheets.index') }}" class="w-full sm:w-auto flex-shrink-0">
@@ -37,7 +37,7 @@
                         <th scope="col" class="px-6 py-4 font-semibold">Model</th>
                         <th scope="col" class="px-6 py-4 font-semibold">Part No</th>
                         <th scope="col" class="px-6 py-4 font-semibold">Name Part</th>
-                        <th scope="col" class="px-6 py-4 font-semibold text-center">Status Mapping</th>
+                        <th scope="col" class="px-6 py-4 font-semibold text-center">Mapping Status</th>
                         <th scope="col" class="px-6 py-4 font-semibold text-right">Action</th>
                     </tr>
                 </thead>
@@ -64,11 +64,11 @@
                         <td class="px-6 py-4 text-center">
                             @if($product->mappedCheckpoints->isNotEmpty())
                                 <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-green-50 text-green-700 border border-green-200 dark:bg-green-900/30 dark:text-green-400 dark:border-green-800/50 text-[10px] font-bold uppercase tracking-wider">
-                                    <i class="fa-solid fa-check-circle"></i> Sudah Di-mapping ({{ $product->mappedCheckpoints->count() }} Poin)
+                                    <i class="fa-solid fa-check-circle"></i> Mapped ({{ $product->mappedCheckpoints->count() }} Points)
                                 </span>
                             @else
                                 <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-gray-100 text-gray-600 border border-gray-200 dark:bg-gray-700 dark:text-gray-400 dark:border-gray-600 text-[10px] font-bold uppercase tracking-wider">
-                                    <i class="fa-solid fa-minus"></i> Belum Di-mapping
+                                    <i class="fa-solid fa-minus"></i> Unmapped
                                 </span>
                             @endif
                         </td>

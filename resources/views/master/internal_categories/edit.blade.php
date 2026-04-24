@@ -1,13 +1,13 @@
 @extends('layouts.app')
 
-@section('title', 'Edit Category Internal')
-@section('page_title', 'Master Data / Category Internal / Edit')
+@section('title', 'Edit Internal Category')
+@section('page_title', 'Master Data / Internal Category / Edit')
 
 @section('content')
 <div class="max-w-2xl bg-white dark:bg-gray-800 rounded-lg shadow border border-gray-200 dark:border-gray-700">
     <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
         <h2 class="text-lg font-semibold text-gray-800 dark:text-white flex items-center gap-2">
-            <i class="fa-solid fa-pen-to-square text-blue-500"></i> Edit Category Internal
+            <i class="fa-solid fa-pen-to-square text-blue-500"></i> Edit Internal Category
         </h2>
         <a href="{{ route('master.internal-categories.index') }}" class="text-slate-500 hover:text-slate-700 dark:text-gray-400 dark:hover:text-gray-200 transition">
             <i class="fa-solid fa-arrow-left mr-1"></i> Back
@@ -19,7 +19,7 @@
         @method('PUT')
         <div class="p-6 space-y-4">
             <div>
-                <label for="name" class="block text-sm font-medium text-slate-700 dark:text-gray-300 mb-1">Name Category Internal <span class="text-red-500">*</span></label>
+                <label for="name" class="block text-sm font-medium text-slate-700 dark:text-gray-300 mb-1">Internal Category Name <span class="text-red-500">*</span></label>
                 <input type="text" name="name" id="name" value="{{ old('name', $internalCategory->name) }}" required
                     class="block w-full px-3 py-2 bg-white dark:bg-gray-900 border border-slate-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:text-white sm:text-sm transition-colors">
                 @error('name')

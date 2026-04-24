@@ -1,7 +1,8 @@
 @extends('layouts.app')
 
 @section('title', 'Add Master Checkpoint')
-@section('page_title', 'Master Data / Quality Checkpoints / Add New')
+@section('title', 'Tambah Master Checkpoint')
+@section('page_title', 'Master Data / Quality Checkpoints / Tambah Baru')
 
 @section('content')
 <div class="bg-white dark:bg-gray-800 rounded-lg shadow border border-gray-200 dark:border-gray-700 max-w-2xl mx-auto">
@@ -29,7 +30,7 @@
                 <!-- Urutan Poin -->
                 <div class="space-y-1 sm:col-span-1">
                     <label for="point_number" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                        Urutan <span class="text-red-500">*</span>
+                        Sequence <span class="text-red-500">*</span>
                     </label>
                     <input type="number" id="point_number" name="point_number" required min="1" max="99" value="{{ old('point_number', $nextPoint ?? 1) }}"
                         class="w-full rounded-lg border-gray-300 dark:border-gray-600 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm dark:bg-gray-700 dark:text-white font-mono font-bold text-center">
@@ -38,28 +39,20 @@
                 <!-- Check Item -->
                 <div class="space-y-1 sm:col-span-3">
                     <label for="check_item" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                        Item Pengecekan / Description Cek <span class="text-red-500">*</span>
+                        Check Item / Description <span class="text-red-500">*</span>
                     </label>
-                    <input type="text" id="check_item" name="check_item" required value="{{ old('check_item') }}" placeholder="Contoh: Scratch, Penyok, Kelengkapan Spot, ..." 
+                    <input type="text" id="check_item" name="check_item" required value="{{ old('check_item') }}" placeholder="Example: Scratch, Dent, Spot Completeness, ..." 
                         class="w-full rounded-lg border-gray-300 dark:border-gray-600 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm dark:bg-gray-700 dark:text-white">
                 </div>
             </div>
 
 
             
-            <div class="space-y-1">
-                <label for="method" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                    Metode Pengecekan (Optional)
-                </label>
-                <input type="text" id="method" name="method" value="{{ old('method') }}" placeholder="Contoh: Visual, Raba, Vernier Caliper..."
-                    class="w-full rounded-lg border-gray-300 dark:border-gray-600 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm dark:bg-gray-700 dark:text-white">
-            </div>
-
             <div class="flex items-center">
                 <input id="is_active" name="is_active" type="checkbox" value="1" checked
                     class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded dark:border-gray-600 dark:bg-gray-700">
                 <label for="is_active" class="ml-2 block text-sm text-slate-900 dark:text-slate-300">
-                    Gunakan poin ini di formulir Digital QE Checksheet
+                    Use this point in Digital QE Checksheet forms
                 </label>
             </div>
 

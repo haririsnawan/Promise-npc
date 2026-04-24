@@ -21,7 +21,7 @@
                 <label for="name" class="block text-sm font-medium text-slate-700 dark:text-gray-300 mb-1">Name Delivery Group <span class="text-red-500">*</span></label>
                 <input type="text" name="name" id="name" value="{{ old('name') }}" required
                     class="block w-full px-3 py-2 bg-white dark:bg-gray-900 border border-slate-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:text-white sm:text-sm transition-colors"
-                    placeholder="Contoh: GR1, GR2, dll">
+                    placeholder="Example: GR1, GR2, dll">
                 @error('name')
                     <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
                 @enderror

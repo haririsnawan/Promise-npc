@@ -1,13 +1,13 @@
 @extends('layouts.app')
 
 @section('title', 'Edit Delivery Target')
-@section('page_title', 'Master Data / Tujuan Pengiriman / Edit')
+@section('page_title', 'Master Data / Delivery Targets / Edit')
 
 @section('content')
 <div class="bg-white dark:bg-gray-800 rounded-lg shadow border border-gray-200 dark:border-gray-700 max-w-2xl mx-auto">
     <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
         <h2 class="text-xl font-semibold text-gray-800 dark:text-white">
-            <i class="fa-solid fa-pen-to-square text-green-600 mr-2"></i> Edit Tujuan Pengiriman
+            <i class="fa-solid fa-pen-to-square text-green-600 mr-2"></i> Edit Delivery Target
         </h2>
     </div>
 
@@ -28,7 +28,7 @@
             
             <div class="space-y-1">
                 <label for="target_name" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                    Name Tujuan (Delivery To) <span class="text-red-500">*</span>
+                    Target Name (Delivery To) <span class="text-red-500">*</span>
                 </label>
                 <div class="relative">
                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
@@ -36,7 +36,7 @@
                     </div>
                     <input type="text" id="target_name" name="target_name" required value="{{ old('target_name', $deliveryTarget->target_name) }}"
                         class="w-full rounded-lg border-gray-300 dark:border-gray-600 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm dark:bg-gray-700 dark:text-white"
-                        style="padding-left: 2.5rem;" placeholder="Contoh: MMKI, Fujitrans, PT. SAI...">
+                        style="padding-left: 2.5rem;" placeholder="Example: MMKI, Fujitrans, PT. SAI...">
                 </div>
             </div>
 
@@ -55,7 +55,7 @@
                 Cancel
             </a>
             <button type="submit" class="px-4 py-2 bg-gradient-to-r from-blue-600 to-cyan-600 text-white rounded-lg shadow-md shadow-blue-500/20 text-sm font-medium hover:from-blue-700 hover:to-cyan-700 transition flex items-center gap-2">
-                <i class="fa-solid fa-floppy-disk"></i> Perbarui Target
+                <i class="fa-solid fa-floppy-disk"></i> Update Target
             </button>
         </div>
     </form>

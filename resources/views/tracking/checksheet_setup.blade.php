@@ -8,7 +8,7 @@
     <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center bg-gray-50/50 dark:bg-gray-800/50">
         <div>
             <h2 class="text-xl font-semibold text-gray-800 dark:text-white">
-                <i class="fa-solid fa-list-check text-blue-500 mr-2"></i> Mapping Master Checksheet
+                <i class="fa-solid fa-list-check text-blue-500 mr-2"></i> Master Checksheet Mapping
             </h2>
             <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
                 <strong>Part No:</strong> <span class="text-blue-600 dark:text-blue-400 font-bold">{{ $product->part_no }}</span> | <strong>Name:</strong> {{ $product->part_name }} | <strong>Customer:</strong> <span class="font-bold text-gray-800 dark:text-gray-200">{{ optional($product->customer)->code ?? '-' }}</span> | <strong>Model:</strong> <span class="font-medium text-gray-800 dark:text-gray-200">{{ optional($product->vehicleModel)->name ?? '-' }}</span>
@@ -70,7 +70,7 @@
                 Cancel
             </a>
             <button type="submit" class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition shadow-sm font-bold flex items-center gap-2 text-sm shadow-md">
-                <i class="fa-solid fa-floppy-disk"></i> Save Mapping Poin
+                <i class="fa-solid fa-floppy-disk"></i> Save Point Mapping
             </button>
         </div>
     </form>

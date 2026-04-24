@@ -1,16 +1,16 @@
 @extends('layouts.app')
 
 @section('title', 'Master Delivery Target')
-@section('page_title', 'Master Data / Tujuan Pengiriman')
+@section('page_title', 'Master Data / Delivery Targets')
 
 @section('content')
 <div class="bg-white dark:bg-gray-800 rounded-lg shadow border border-gray-200 dark:border-gray-700">
     <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
         <h2 class="text-lg font-semibold text-gray-800 dark:text-white flex items-center gap-2">
-            <i class="fa-solid fa-truck-fast text-blue-500"></i> Register Tujuan Pengiriman
+            <i class="fa-solid fa-truck-fast text-blue-500"></i> Delivery Target Register
         </h2>
         <a href="{{ route('master.delivery-targets.create') }}" class="px-4 py-2 bg-gradient-to-r from-blue-600 to-cyan-600 text-white rounded-lg hover:from-blue-700 hover:to-cyan-700 transition shadow-md shadow-blue-500/20 font-medium text-sm flex items-center gap-2">
-            <i class="fa-solid fa-plus"></i> Add Tujuan
+            <i class="fa-solid fa-plus"></i> Add Target
         </a>
     </div>
 
@@ -20,7 +20,7 @@
                 <thead class="bg-gray-100 dark:bg-gray-700/50 text-slate-800 dark:text-slate-200 border-b border-gray-200 dark:border-gray-600 uppercase text-xs tracking-wider">
                     <tr>
                         <th scope="col" class="px-6 py-4 font-semibold w-16">No</th>
-                        <th scope="col" class="px-6 py-4 font-semibold">Name Tujuan (Target Delivery)</th>
+                        <th scope="col" class="px-6 py-4 font-semibold">Target Name</th>
                         <th scope="col" class="px-6 py-4 font-semibold w-32">Status</th>
                         <th scope="col" class="px-6 py-4 font-semibold text-right w-24">Action</th>
                     </tr>
@@ -37,7 +37,7 @@
                                 </span>
                             @else
                                 <span class="px-2.5 py-1 rounded border text-xs font-semibold bg-gray-100 text-gray-800 border-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600">
-                                    Nonaktif
+                                    Inactive
                                 </span>
                             @endif
                         </td>
@@ -46,7 +46,7 @@
                                 <a href="{{ route('master.delivery-targets.edit', $target->id) }}" class="text-blue-600 hover:text-blue-800 hover:bg-blue-50 p-2 rounded-md transition" title="Edit">
                                     <i class="fa-solid fa-pen-to-square"></i>
                                 </a>
-                                <form action="{{ route('master.delivery-targets.destroy', $target->id) }}" method="POST" class="inline" onsubmit="return confirm('Delete tujuan pengiriman ini secara permanen?');">
+                                <form action="{{ route('master.delivery-targets.destroy', $target->id) }}" method="POST" class="inline" onsubmit="return confirm('Permanently delete this delivery target?');">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="text-red-500 hover:text-red-700 hover:bg-red-50 p-2 rounded-md transition" title="Delete">
@@ -61,7 +61,7 @@
                         <td colspan="4" class="p-12 text-center text-gray-500 dark:text-gray-400">
                             <div class="flex flex-col items-center justify-center gap-3">
                                 <i class="fa-regular fa-folder-open text-4xl text-gray-300 dark:text-gray-600"></i>
-                                <p>Belum ada data tujuan pengiriman yang didaftarkan.</p>
+                                <p>No delivery targets registered yet.</p>
                             </div>
                         </td>
                     </tr>

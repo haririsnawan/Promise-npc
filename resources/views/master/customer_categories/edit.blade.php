@@ -1,13 +1,13 @@
 @extends('layouts.app')
 
-@section('title', 'Edit Mapping Category')
-@section('page_title', 'Master Data / Category Customer / Edit')
+@section('title', 'Edit Category Mapping')
+@section('page_title', 'Master Data / Customer Category / Edit')
 
 @section('content')
 <div class="max-w-2xl bg-white dark:bg-gray-800 rounded-lg shadow border border-gray-200 dark:border-gray-700">
     <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
         <h2 class="text-lg font-semibold text-gray-800 dark:text-white flex items-center gap-2">
-            <i class="fa-solid fa-pen-to-square text-blue-500"></i> Edit Mapping Category
+            <i class="fa-solid fa-pen-to-square text-blue-500"></i> Edit Category Mapping
         </h2>
         <a href="{{ route('master.customer-categories.index') }}" class="text-slate-500 hover:text-slate-700 dark:text-gray-400 dark:hover:text-gray-200 transition">
             <i class="fa-solid fa-arrow-left mr-1"></i> Back
@@ -34,7 +34,7 @@
             </div>
 
             <div>
-                <label for="name" class="block text-sm font-medium text-slate-700 dark:text-gray-300 mb-1">Istilah Category Customer <span class="text-red-500">*</span></label>
+                <label for="name" class="block text-sm font-medium text-slate-700 dark:text-gray-300 mb-1">Customer Category Term <span class="text-red-500">*</span></label>
                 <input type="text" name="name" id="name" value="{{ old('name', $customerCategory->name) }}" required
                     class="block w-full px-3 py-2 bg-white dark:bg-gray-900 border border-slate-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:text-white sm:text-sm transition-colors">
                 @error('name')
@@ -43,8 +43,8 @@
             </div>
 
             <div class="bg-blue-50/50 dark:bg-gray-700/30 p-4 rounded-lg border border-blue-100 dark:border-gray-600">
-                <label for="internal_category_id" class="block text-sm font-medium text-slate-700 dark:text-gray-300 mb-1">Mapping ke Category Internal <span class="text-red-500">*</span></label>
-                <select name="internal_category_id" id="internal_category_id" class="select2 block w-full" required data-placeholder="Select Category Internal...">
+                <label for="internal_category_id" class="block text-sm font-medium text-slate-700 dark:text-gray-300 mb-1">Map to Internal Category <span class="text-red-500">*</span></label>
+                <select name="internal_category_id" id="internal_category_id" class="select2 block w-full" required data-placeholder="Select Internal Category...">
                     <option value=""></option>
                     @foreach($internalCategories as $ic)
                         <option value="{{ $ic->id }}" {{ old('internal_category_id', $customerCategory->internal_category_id) == $ic->id ? 'selected' : '' }}>

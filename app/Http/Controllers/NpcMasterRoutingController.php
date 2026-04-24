@@ -73,6 +73,7 @@ class NpcMasterRoutingController extends Controller
     public function update(Request $request, $part_id)
     {
         $request->validate([
+            'part_id' => 'required|exists:products,id',
             'process_ids' => 'required|array|min:1',
             'process_ids.*' => 'required|exists:npc_processes,id',
             'department_ids' => 'required|array|min:1',
@@ -80,11 +81,17 @@ class NpcMasterRoutingController extends Controller
         ]);
 
         DB::transaction(function () use ($request, $part_id) {
+            // Delete old routing for the original part_id
             NpcMasterRouting::where('part_id', $part_id)->delete();
+            
+            // If the part was changed, delete any existing routings for the new part_id to prevent duplicates
+            if ($part_id != $request->part_id) {
+                NpcMasterRouting::where('part_id', $request->part_id)->delete();
+            }
 
             foreach ($request->process_ids as $index => $processId) {
                 NpcMasterRouting::create([
-                    'part_id' => $part_id,
+                    'part_id' => $request->part_id,
                     'process_id' => $processId,
                     'department_id' => $request->department_ids[$index],
                     'sequence_order' => $index + 1,
