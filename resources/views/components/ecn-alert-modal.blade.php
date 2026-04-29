@@ -37,7 +37,7 @@
                     <i class="fa-solid fa-triangle-exclamation"></i>
                 </div>
                 <div>
-                    <h3 class="text-lg font-bold">Warning Update Revisi (ECN)</h3>
+                    <h3 class="text-lg font-bold">Revision Update Warning (ECN)</h3>
                     <p class="text-sm text-red-500/80 dark:text-red-400/80">Some parts have drawing changes. Please review and apply the new revisions.</p>
                 </div>
             </div>
@@ -77,10 +77,10 @@
                                     <div class="text-slate-400">{{ $ep->created_at->diffForHumans() }}</div>
                                 </td>
                                 <td class="px-4 py-3 text-right">
-                                    <form action="{{ route('parts.apply-ecn', $ep->id) }}" method="POST" onsubmit="confirmAction(event, 'Terapkan revisi terbaru ke part ini?')" class="inline-block">
+                                    <form action="{{ route('parts.apply-ecn', $ep->id) }}" method="POST" onsubmit="confirmAction(event, 'Apply latest revision to this part?')" class="inline-block">
                                         @csrf
                                         <button type="submit" class="px-3 py-1.5 bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold rounded shadow-sm transition-colors flex items-center gap-2">
-                                            <i class="fa-solid fa-check"></i> Terapkan
+                                            <i class="fa-solid fa-check"></i> Apply
                                         </button>
                                     </form>
                                 </td>
@@ -95,8 +95,8 @@
                 <div class="w-16 h-16 bg-slate-100 dark:bg-gray-700 rounded-full flex items-center justify-center mb-4">
                     <i class="fa-regular fa-face-smile text-3xl text-slate-400"></i>
                 </div>
-                <h4 class="text-lg font-semibold text-slate-800 dark:text-gray-200 mb-1">Aman!</h4>
-                <p class="text-sm text-slate-500 dark:text-gray-400">No ada Part yang perlu penyesuaian ECN saat ini.</p>
+                <h4 class="text-lg font-semibold text-slate-800 dark:text-gray-200 mb-1">All clear!</h4>
+                <p class="text-sm text-slate-500 dark:text-gray-400">No parts require ECN adjustment at this time.</p>
             </div>
             @endif
         </div>

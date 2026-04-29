@@ -56,7 +56,7 @@
                             <div class="flex flex-wrap gap-2 items-center sortable-container" data-part-id="{{ $routing->part_id }}">
                                 @foreach($routing->processes as $i => $procRouting)
                                     <div class="sortable-item flex items-center gap-2 cursor-move group/badge" data-id="{{ $procRouting->id }}">
-                                        <span class="inline-flex items-center px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-xs font-semibold text-slate-700 dark:text-slate-300 group-hover/badge:bg-blue-50 dark:group-hover/badge:bg-blue-900/30 group-hover/badge:border-blue-300 dark:group-hover/badge:border-blue-700 transition" title="Drag untuk mengubah urutan">
+                                        <span class="inline-flex items-center px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-xs font-semibold text-slate-700 dark:text-slate-300 group-hover/badge:bg-blue-50 dark:group-hover/badge:bg-blue-900/30 group-hover/badge:border-blue-300 dark:group-hover/badge:border-blue-700 transition" title="Drag to change sequence">
                                             <i class="fa-solid fa-grip-vertical text-slate-400 mr-1.5 group-hover/badge:text-blue-500"></i>
                                             {{ optional($procRouting->process)->process_name ?? 'Unknown' }}
                                         </span>
@@ -70,7 +70,7 @@
                                 <a href="{{ route('master.routings.edit', $routing->part_id) }}" class="text-blue-600 hover:text-blue-800 hover:bg-blue-50 p-2 rounded-md transition" title="Edit">
                                     <i class="fa-solid fa-pen-to-square"></i>
                                 </a>
-                                <form action="{{ route('master.routings.destroy', $routing->part_id) }}" method="POST" class="inline" onsubmit="confirmAction(event, 'Are you sure ingin menghapus routing untuk part ini?')">
+                                <form action="{{ route('master.routings.destroy', $routing->part_id) }}" method="POST" class="inline" onsubmit="confirmAction(event, 'Are you sure you want to delete routing for this part?')">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="text-red-500 hover:text-red-700 hover:bg-red-50 p-2 rounded-md transition" title="Delete">
@@ -85,7 +85,7 @@
                         <td colspan="5" class="p-12 text-center text-gray-500 dark:text-gray-400">
                             <div class="flex flex-col items-center justify-center gap-3">
                                 <i class="fa-solid fa-route text-4xl text-gray-300 dark:text-gray-600"></i>
-                                <p>Belum ada data master routing. Klik "Add Routing" untuk memulai.</p>
+                                <p>No master routing data yet. Click "Add Routing" to start.</p>
                             </div>
                         </td>
                     </tr>
@@ -140,7 +140,7 @@
                             if(data.success) {
                                 // Show tiny success toast using the layout's Toast mechanism if available, or just ignore since it's saved.
                             } else {
-                                alert('Failed menyimpan urutan baru.');
+                                alert('Failed to save new sequence.');
                             }
                         })
                         .catch(err => {

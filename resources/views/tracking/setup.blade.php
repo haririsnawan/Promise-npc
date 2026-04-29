@@ -67,7 +67,7 @@
                                 </a>
                             @else
                                 @php
-                                    // Boleh rollback jika statusnya WAITING_DEPT_CONFIRM dan belum ada proses produksi yang FINISHED
+                                    // Can rollback if status is WAITING_DEPT_CONFIRM and no production process is FINISHED yet
                                     $canRollbackSetup = $part->status === 'WAITING_DEPT_CONFIRM' && !$part->processes->where('status', 'FINISHED')->count();
                                 @endphp
                                 <div class="flex flex-col items-end gap-2">

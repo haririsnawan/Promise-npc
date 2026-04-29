@@ -1,8 +1,7 @@
 @extends('layouts.app')
 
 @section('title', 'Add Master Checkpoint')
-@section('title', 'Tambah Master Checkpoint')
-@section('page_title', 'Master Data / Quality Checkpoints / Tambah Baru')
+@section('page_title', 'Master Data / Quality Checkpoints / Add New')
 
 @section('content')
 <div class="bg-white dark:bg-gray-800 rounded-lg shadow border border-gray-200 dark:border-gray-700 max-w-2xl mx-auto">
@@ -27,7 +26,7 @@
         <div class="p-6 space-y-6">
             
             <div class="grid grid-cols-1 sm:grid-cols-4 gap-6">
-                <!-- Urutan Poin -->
+                <!-- Point Sequence -->
                 <div class="space-y-1 sm:col-span-1">
                     <label for="point_number" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
                         Sequence <span class="text-red-500">*</span>

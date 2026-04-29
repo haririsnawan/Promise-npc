@@ -49,7 +49,7 @@
                         <td colspan="3" class="p-12 text-center text-gray-500 dark:text-gray-400">
                             <div class="flex flex-col items-center justify-center gap-3">
                                 <i class="fa-regular fa-folder-open text-4xl text-gray-300 dark:text-gray-600"></i>
-                                <p>Belum ada data grup pengiriman yang didaftarkan.</p>
+                                <p>No delivery group data registered yet.</p>
                             </div>
                         </td>
                     </tr>

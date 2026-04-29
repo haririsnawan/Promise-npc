@@ -40,7 +40,7 @@
                 @csrf
                 
                 <div class="flex justify-between items-center mb-3">
-                    <h3 class="text-md font-semibold text-gray-700 dark:text-gray-200">Register Urutan Process</h3>
+                    <h3 class="text-md font-semibold text-gray-700 dark:text-gray-200">Process Sequence Register</h3>
                 </div>
 
                 <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden mb-6">

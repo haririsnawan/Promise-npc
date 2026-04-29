@@ -17,7 +17,7 @@
             @csrf
             
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <!-- Data Pencarian -->
+                <!-- Search Data -->
                 <div class="col-span-1 md:col-span-2 space-y-1 relative">
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">
                         Search Part No / Name of DB Drawing (Optional)
@@ -29,7 +29,7 @@
                         <input type="text" id="part_search" autocomplete="off"
                             class="w-full rounded-lg border-gray-300 dark:border-gray-600 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm dark:bg-gray-700 dark:text-white"
                             style="padding-left: 2.5rem;"
-                            placeholder="Ketik Part No atau Part Name untuk mencari...">
+                            placeholder="Type Part No or Part Name to search...">
                         
                         <!-- Search Results Dropdown -->
                         <div id="search_results" class="hidden absolute z-30 w-full mt-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg max-h-60 overflow-y-auto">
@@ -55,7 +55,7 @@
                     </label>
                     <input type="text" id="part_no_input" name="part_no" required value="{{ old('part_no') }}" readonly
                         class="w-full rounded-lg border-gray-300 dark:border-gray-600 shadow-sm sm:text-sm dark:bg-gray-800 dark:text-gray-400 bg-gray-100 text-gray-500 cursor-not-allowed focus:ring-0 focus:border-gray-300"
-                        placeholder="Select of pencarian di atas...">
+                        placeholder="Select from search above...">
                     @error('part_no') <span class="text-xs text-red-500">{{ $message }}</span> @enderror
                 </div>
 
@@ -65,7 +65,7 @@
                     </label>
                     <input type="text" id="part_name_input" name="part_name" required value="{{ old('part_name') }}" readonly
                         class="w-full rounded-lg border-gray-300 dark:border-gray-600 shadow-sm sm:text-sm dark:bg-gray-800 dark:text-gray-400 bg-gray-100 text-gray-500 cursor-not-allowed focus:ring-0 focus:border-gray-300"
-                        placeholder="Terisi otomatis of pencarian...">
+                        placeholder="Auto-filled from search...">
                     @error('part_name') <span class="text-xs text-red-500">{{ $message }}</span> @enderror
                 </div>
 

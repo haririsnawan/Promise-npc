@@ -18,10 +18,10 @@
             @method('PUT')
             
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <!-- Data Pencarian -->
+                <!-- Search Data -->
                 <div class="col-span-1 md:col-span-2 space-y-1 relative">
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                        Search Part No / Name of DB Drawing (Gunakan jika ingin mengganti Part)
+                        Search Part No / Name of DB Drawing (Use this if you want to replace Part)
                     </label>
                     <div class="relative">
                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
@@ -30,7 +30,7 @@
                         <input type="text" id="part_search" autocomplete="off"
                             class="w-full rounded-lg border-gray-300 dark:border-gray-600 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm dark:bg-gray-700 dark:text-white"
                             style="padding-left: 2.5rem;"
-                            placeholder="Ketik Part No atau Part Name untuk mencari...">
+                            placeholder="Type Part No or Part Name to search...">
                         
                         <!-- Search Results Dropdown -->
                         <div id="search_results" class="hidden absolute z-30 w-full mt-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg max-h-60 overflow-y-auto">

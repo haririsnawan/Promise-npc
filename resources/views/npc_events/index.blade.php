@@ -60,7 +60,7 @@
                                 <a href="{{ route('events.edit', $event->id) }}" class="text-indigo-600 hover:text-indigo-800 hover:bg-indigo-50 p-2 rounded-md transition" title="Edit">
                                     <i class="fa-solid fa-pen-to-square"></i>
                                 </a>
-                                <form action="{{ route('events.destroy', $event->id) }}" method="POST" class="inline" onsubmit="confirmAction(event, 'Are you sure ingin menghapus data ini?')">
+                                <form action="{{ route('events.destroy', $event->id) }}" method="POST" class="inline" onsubmit="confirmAction(event, 'Are you sure you want to delete this data?')">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="text-red-500 hover:text-red-700 hover:bg-red-50 p-2 rounded-md transition" title="Delete">
@@ -75,7 +75,7 @@
                         <td colspan="6" class="p-12 text-center text-gray-500 dark:text-gray-400">
                             <div class="flex flex-col items-center justify-center gap-3">
                                 <i class="fa-regular fa-folder-open text-4xl text-gray-300 dark:text-gray-600"></i>
-                                <p>Belum ada data event yang didaftarkan.</p>
+                                <p>No event data registered yet.</p>
                             </div>
                         </td>
                     </tr>

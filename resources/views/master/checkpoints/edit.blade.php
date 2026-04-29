@@ -27,7 +27,7 @@
         <div class="p-6 space-y-6">
             
             <div class="grid grid-cols-1 sm:grid-cols-4 gap-6">
-                <!-- Urutan Poin -->
+                <!-- Point Sequence -->
                 <div class="space-y-1 sm:col-span-1">
                     <label for="point_number" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
                         Sequence <span class="text-red-500">*</span>

@@ -48,8 +48,8 @@
                 <div>
                     <h3 class="text-lg font-bold text-gray-800 dark:text-white">Individual Permissions (Exceptions)</h3>
                     <p class="text-sm text-gray-500">
-                        Checkbox terkunci (hijau transparan) berarti hak akses sudah diberikan oleh <strong>Role</strong>.<br>
-                        Centang kotak abu-abu untuk memberikan hak tambahan khusus untuk pengguna ini (meskipun role-nya tidak punya akses).
+                        Locked checkbox (transparent green) means access rights have been granted by the <strong>Role</strong>.<br>
+                        Check the grey box to grant specific additional rights for this user (even if their role has no access).
                     </p>
                 </div>
             </div>

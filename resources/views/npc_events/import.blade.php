@@ -17,7 +17,7 @@
 
             <div class="bg-blue-50 dark:bg-blue-900/30 p-4 rounded-lg border border-blue-100 dark:border-blue-800 text-sm text-blue-800 dark:text-blue-300">
                 <p class="font-semibold mb-2"><i class="fa-solid fa-circle-info mr-1"></i> Information Format Excel:</p>
-                <p class="mb-2">Pastikan kolom Excel mengikuti urutan berikut (Baris pertama dianggap Header dan akan dilewati):</p>
+                <p class="mb-2">Ensure Excel columns follow this sequence (First row is considered Header and will be skipped):</p>
                 <ol class="list-decimal pl-5 space-y-1 font-mono text-xs mt-2 relative z-10 w-fit p-3 bg-white dark:bg-slate-800 rounded shadow-sm border border-blue-200 dark:border-blue-700 text-slate-700 dark:text-slate-300">
                     <li>PO NO</li>
                     <li>PART NO</li>

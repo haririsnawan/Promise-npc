@@ -51,7 +51,7 @@
             <!-- Permission Matrix -->
             <div class="mb-4 flex items-center justify-between">
                 <h3 class="text-lg font-bold text-gray-800 dark:text-white">Permission Matrix</h3>
-                <p class="text-sm text-gray-500">Centang kotak untuk memberikan hak akses spesifik pada menu.</p>
+                <p class="text-sm text-gray-500">Check the box to grant specific access rights to the menu.</p>
             </div>
 
             <div class="overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700">

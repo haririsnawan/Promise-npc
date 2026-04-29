@@ -154,7 +154,7 @@
                     });
                     modelSelect.disabled = false;
                 } else {
-                    modelSelect.innerHTML = '<option value="">No ada model tersedia</option>';
+                    modelSelect.innerHTML = '<option value="">No models available</option>';
                 }
                 $(modelSelect).trigger('change.select2');
             })
@@ -198,7 +198,7 @@
                     });
                     categorySelect.disabled = false;
                 } else {
-                    categorySelect.innerHTML = '<option value="">No ada kategori tersedia (Harap tambah di Master)</option>';
+                    categorySelect.innerHTML = '<option value="">No categories available (Please add in Master Data)</option>';
                 }
                 $(categorySelect).trigger('change.select2');
             })

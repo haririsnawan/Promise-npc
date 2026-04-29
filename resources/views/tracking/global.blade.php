@@ -441,13 +441,13 @@ $pOverdue = ($isDeliveryOverdue || $hasLateProcess) && !in_array($part->status, 
         $targetDate = \Carbon\Carbon::parse($pProc->target_completion_date)->startOfDay();
         
         if (!empty($pProc->actual_completion_date)) {
-            // Case 1: SUDAH SELESAI. Cek apakah tanggal aktual melebihi target
+            // Case 1: COMPLETED. Check if actual date exceeds target
             $actualDate = \Carbon\Carbon::parse($pProc->actual_completion_date)->startOfDay();
             if ($actualDate->greaterThan($targetDate)) {
                 $isSpLate = true;
             }
         } else {
-            // Case 2: BELUM SELESAI. Cek apakah hari ini melebihi target
+            // Case 2: NOT COMPLETED. Check if today exceeds target
             if (\Carbon\Carbon::today()->greaterThan($targetDate)) {
                 $isSpLate = true;
             }
@@ -459,7 +459,7 @@ $pOverdue = ($isDeliveryOverdue || $hasLateProcess) && !in_array($part->status, 
         if ($isSpLate) {
             // Render jika Done TAPI TERLAMBAT (Sequence 2)
             $spBg = "bg-red-100 text-red-700 border-red-300 ring-1 ring-red-200";
-            $spIcon = "fa-check"; // Tetap icon check karena sudah selesai
+            $spIcon = "fa-check"; // Keep check icon because it's completed
         } else {
             // Render jika Done TEPAT WAKTU (Sequence 1)
             $spBg = "bg-emerald-100 text-emerald-700 border-emerald-300";
@@ -472,7 +472,7 @@ $pOverdue = ($isDeliveryOverdue || $hasLateProcess) && !in_array($part->status, 
             : "bg-amber-100/80 text-amber-700 border-amber-300 ring-1 ring-amber-300 shadow-sm";
         $spIcon = "fa-spinner fa-spin";
     } else {
-        // Render proses antrean yang belum mulai
+        // Render queue processes that haven't started
         $spBg = $isSpLate
             ? "bg-red-50 text-red-500 border-red-200 opacity-80"
             : "bg-gray-100 text-gray-500 border-gray-200 opacity-70";
@@ -562,7 +562,7 @@ $pOverdue = ($isDeliveryOverdue || $hasLateProcess) && !in_array($part->status, 
                                                     @else
                                                         <div class="text-gray-500 dark:text-gray-400 flex flex-col items-center gap-2">
                                                             <i class="fa-solid fa-image text-3xl opacity-50"></i>
-                                                            <span class="text-xs font-medium tracking-wide">Belum Ada Foto</span>
+                                                            <span class="text-xs font-medium tracking-wide">No Photo Yet</span>
                                                         </div>
                                                     @endif
                                                     
@@ -604,7 +604,7 @@ $pOverdue = ($isDeliveryOverdue || $hasLateProcess) && !in_array($part->status, 
                                                             @if($p->actual_qty)
                                                                 <span class="text-sm font-black text-blue-600 dark:text-blue-400 mt-0.5">{{ number_format($p->actual_qty) }} PCS</span>
                                                             @else
-                                                                <span class="text-xs font-bold text-amber-500 italic mt-1">Belum Lapor</span>
+                                                                <span class="text-xs font-bold text-amber-500 italic mt-1">Not Reported</span>
                                                             @endif
                                                         </div>
                                                     </div>

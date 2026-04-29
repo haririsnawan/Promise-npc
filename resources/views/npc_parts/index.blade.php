@@ -119,7 +119,7 @@
                                 <a href="{{ route('events.parts.edit', [$event->id, $part->id]) }}" class="text-blue-600 hover:text-blue-800 hover:bg-blue-50 p-2 rounded-md transition" title="Edit">
                                     <i class="fa-solid fa-pen-to-square"></i>
                                 </a>
-                                <form action="{{ route('events.parts.destroy', [$event->id, $part->id]) }}" method="POST" class="inline" onsubmit="confirmAction(event, 'Are you sure ingin menghapus data ini?')">
+                                <form action="{{ route('events.parts.destroy', [$event->id, $part->id]) }}" method="POST" class="inline" onsubmit="confirmAction(event, 'Are you sure you want to delete this data?')">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="text-red-500 hover:text-red-700 hover:bg-red-50 p-2 rounded-md transition" title="Delete">
@@ -134,7 +134,7 @@
                         <td colspan="10" class="p-12 text-center text-gray-500 dark:text-gray-400">
                             <div class="flex flex-col items-center justify-center gap-3">
                                 <i class="fa-regular fa-folder-open text-4xl text-gray-300 dark:text-gray-600"></i>
-                                <p>Belum ada part yang didaftarkan untuk event ini.</p>
+                                <p>No parts registered for this event yet.</p>
                             </div>
                         </td>
                     </tr>

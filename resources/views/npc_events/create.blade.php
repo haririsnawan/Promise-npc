@@ -163,7 +163,7 @@
                     });
                     modelSelect.disabled = false;
                 } else {
-                    modelSelect.innerHTML = '<option value="">No ada model tersedia</option>';
+                    modelSelect.innerHTML = '<option value="">No models available</option>';
                 }
                 $(modelSelect).trigger('change.select2');
             })
@@ -207,7 +207,7 @@
                     });
                     categorySelect.disabled = false;
                 } else {
-                    categorySelect.innerHTML = '<option value="">No ada kategori tersedia (Harap tambah di Master)</option>';
+                    categorySelect.innerHTML = '<option value="">No categories available (Please add in Master Data)</option>';
                 }
                 $(categorySelect).trigger('change.select2');
             })
@@ -321,7 +321,7 @@
                         });
                         dropdown.classList.remove('hidden');
                     } else {
-                        dropdown.innerHTML = '<div class="px-3 py-2 text-gray-400 text-xs italic">No ada hasil</div>';
+                        dropdown.innerHTML = '<div class="px-3 py-2 text-gray-400 text-xs italic">No results found</div>';
                         dropdown.classList.remove('hidden');
                     }
                 });

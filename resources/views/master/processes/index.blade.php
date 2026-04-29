@@ -38,7 +38,7 @@
                                         {{ $dept->name }}
                                     </span>
                                 @empty
-                                    <span class="text-xs text-gray-400 italic">Belum diatur</span>
+                                    <span class="text-xs text-gray-400 italic">Not set</span>
                                 @endforelse
                             </div>
                         </td>
@@ -62,7 +62,7 @@
                         <td colspan="4" class="p-12 text-center text-gray-500 dark:text-gray-400">
                             <div class="flex flex-col items-center justify-center gap-3">
                                 <i class="fa-regular fa-folder-open text-4xl text-gray-300 dark:text-gray-600"></i>
-                                <p>Belum ada data proses produksi yang didaftarkan.</p>
+                                <p>No production process data registered yet.</p>
                             </div>
                         </td>
                     </tr>
